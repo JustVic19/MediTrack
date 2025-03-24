@@ -19,8 +19,10 @@ import {
   FormLabel, 
   FormMessage 
 } from "@/components/ui/form";
-import { Loader2, LogIn } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Loader2, LogIn, Mail } from "lucide-react";
 import { FaApple, FaGoogle } from "react-icons/fa";
+import { apiRequest } from "@/lib/queryClient";
 
 const loginSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -40,10 +42,27 @@ const registerSchema = z.object({
 type LoginValues = z.infer<typeof loginSchema>;
 type RegisterValues = z.infer<typeof registerSchema>;
 
+// Email schema for password reset
+const resetPasswordSchema = z.object({
+  email: z.string().email("Please enter a valid email address")
+});
+
+type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
+
 export default function AuthPage() {
   const [activeTab, setActiveTab] = useState("login");
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [isResetSubmitting, setIsResetSubmitting] = useState(false);
   const { user, isLoading, loginMutation, registerMutation } = useAuth();
   const { toast } = useToast();
+  
+  // Create the password reset form
+  const resetForm = useForm<ResetPasswordValues>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: {
+      email: ""
+    }
+  });
 
   // Create the login form
   const loginForm = useForm<LoginValues>({
@@ -153,7 +172,17 @@ export default function AuthPage() {
                       name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Password</FormLabel>
+                          <div className="flex items-center justify-between">
+                            <FormLabel>Password</FormLabel>
+                            <Button 
+                              variant="link" 
+                              className="p-0 h-auto text-xs" 
+                              type="button"
+                              onClick={() => setIsResetModalOpen(true)}
+                            >
+                              Forgot password?
+                            </Button>
+                          </div>
                           <FormControl>
                             <Input type="password" placeholder="Enter your password" {...field} />
                           </FormControl>
@@ -365,6 +394,84 @@ export default function AuthPage() {
           </Button>
         </div>
       </div>
+      
+      {/* Password Reset Modal */}
+      <Dialog open={isResetModalOpen} onOpenChange={setIsResetModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Reset Your Password</DialogTitle>
+            <DialogDescription>
+              Enter your email address to receive a password reset link.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...resetForm}>
+            <form 
+              onSubmit={resetForm.handleSubmit(async (data) => {
+                try {
+                  setIsResetSubmitting(true);
+                  const response = await apiRequest("POST", "/api/auth/request-password-reset", data);
+                  const result = await response.json();
+                  
+                  toast({
+                    title: "Password Reset Email Sent",
+                    description: "If your email exists in our system, you will receive a password reset link shortly.",
+                    variant: "default",
+                  });
+                  
+                  setIsResetModalOpen(false);
+                  resetForm.reset();
+                } catch (error) {
+                  toast({
+                    title: "Error",
+                    description: "There was a problem sending the reset email. Please try again.",
+                    variant: "destructive",
+                  });
+                } finally {
+                  setIsResetSubmitting(false);
+                }
+              })}
+              className="space-y-4"
+            >
+              <FormField
+                control={resetForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email Address</FormLabel>
+                    <FormControl>
+                      <Input placeholder="youremail@example.com" {...field} type="email" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsResetModalOpen(false)}
+                  disabled={isResetSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isResetSubmitting}>
+                  {isResetSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Sending
+                    </>
+                  ) : (
+                    <>
+                      <Mail className="mr-2 h-4 w-4" />
+                      Send Reset Link
+                    </>
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
