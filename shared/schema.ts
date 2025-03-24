@@ -8,8 +8,13 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   fullName: text("full_name").notNull(),
-  email: text("email"),
+  email: text("email").notNull(),
   role: text("role").default("staff").notNull(),
+  isVerified: boolean("is_verified").default(false).notNull(),
+  verificationToken: text("verification_token"),
+  verificationExpires: timestamp("verification_expires"),
+  passwordResetToken: text("password_reset_token"),
+  passwordResetExpires: timestamp("password_reset_expires"),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({

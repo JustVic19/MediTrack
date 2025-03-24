@@ -3,6 +3,13 @@ import { z } from "zod";
 import { storage } from "./storage";
 import { insertUserSchema } from "@shared/schema";
 import session from "express-session";
+import { 
+  initializeEmailService, 
+  generateVerificationToken, 
+  generatePasswordResetToken,
+  sendVerificationEmail,
+  sendPasswordResetEmail
+} from "./email-service";
 
 // Extend express Request with session
 declare module "express-session" {
@@ -11,6 +18,11 @@ declare module "express-session" {
     userRole?: string;
   }
 }
+
+// Initialize email service
+initializeEmailService().catch(err => {
+  console.error('Failed to initialize email service:', err);
+});
 
 // Login schema
 const loginSchema = z.object({
@@ -49,6 +61,16 @@ export async function authenticate(req: Request, res: Response) {
       return res.status(401).json({ 
         success: false, 
         message: "Invalid username or password" 
+      });
+    }
+
+    // Check if user's email is verified
+    if (user.isVerified === false) {
+      return res.status(403).json({
+        success: false,
+        message: "Email not verified. Please check your email for the verification link.",
+        requiresVerification: true,
+        email: user.email
       });
     }
 
@@ -98,8 +120,29 @@ export async function register(req: Request, res: Response) {
       });
     }
 
-    // Create the user
-    const newUser = await storage.createUser(userData);
+    // Generate verification token
+    const { token, expires } = generateVerificationToken();
+
+    // Create the user with verification token
+    const newUser = await storage.createUser({
+      ...userData,
+      isVerified: false,
+      verificationToken: token,
+      verificationExpires: expires
+    });
+
+    // Send verification email
+    try {
+      await sendVerificationEmail(
+        userData.email,
+        token,
+        userData.username,
+        userData.fullName
+      );
+    } catch (error) {
+      console.error('Failed to send verification email:', error);
+      // Continue registration process even if email fails
+    }
     
     // Remove password from response
     const { password: _, ...safeUser } = newUser;
@@ -107,7 +150,7 @@ export async function register(req: Request, res: Response) {
     return res.status(201).json({
       success: true,
       user: safeUser,
-      message: "User registered successfully"
+      message: "User registered successfully. Please check your email to verify your account before logging in."
     });
   } catch (error) {
     console.error("Registration error:", error);
@@ -153,6 +196,20 @@ export async function checkAuthStatus(req: Request, res: Response) {
         // User not found but session exists
         return res.status(200).json({ 
           isLoggedIn: false 
+        });
+      }
+      
+      // Check if user's email is verified
+      if (user.isVerified === false) {
+        // Clear session for unverified users
+        req.session.destroy((err: any) => {
+          if (err) console.error('Error destroying session:', err);
+        });
+        
+        return res.status(200).json({ 
+          isLoggedIn: false,
+          requiresVerification: true,
+          message: "Email not verified. Please check your email for the verification link."
         });
       }
       
