@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "dark" | "light" | "system";
+// Simplified theme type without "system" option
+type Theme = "dark" | "light";
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -14,7 +15,7 @@ type ThemeProviderState = {
 };
 
 const initialState: ThemeProviderState = {
-  theme: "system",
+  theme: "light",
   setTheme: () => null,
 };
 
@@ -29,42 +30,29 @@ const applyTheme = (theme: Theme) => {
   // Clear existing theme classes
   root.classList.remove("light", "dark");
   
-  // Apply new theme
-  if (theme === "system") {
-    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    root.classList.add(systemTheme);
-  } else {
-    root.classList.add(theme);
-  }
+  // Apply the theme
+  root.classList.add(theme);
 };
 
 export function ThemeProvider({
   children,
-  defaultTheme = "system",
+  defaultTheme = "light",
   storageKey = "meditrack-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
-  );
+  const [theme, setTheme] = useState<Theme>(() => {
+    // Get theme from localStorage or use default
+    const savedTheme = localStorage.getItem(storageKey);
+    // Make sure the saved theme is valid (light or dark)
+    if (savedTheme === "light" || savedTheme === "dark") {
+      return savedTheme;
+    }
+    return defaultTheme;
+  });
 
   // Apply theme whenever it changes
   useEffect(() => {
     applyTheme(theme);
-    
-    // Set up system theme change listener
-    if (theme === "system") {
-      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-      
-      const handleSystemThemeChange = (e: MediaQueryListEvent) => {
-        const root = window.document.documentElement;
-        root.classList.remove("light", "dark");
-        root.classList.add(e.matches ? "dark" : "light");
-      };
-      
-      mediaQuery.addEventListener("change", handleSystemThemeChange);
-      return () => mediaQuery.removeEventListener("change", handleSystemThemeChange);
-    }
   }, [theme]);
 
   // Create value object with setter that persists to localStorage

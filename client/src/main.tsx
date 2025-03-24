@@ -3,20 +3,15 @@ import App from "./App";
 import "./index.css";
 import { ThemeProvider } from "./components/theme-provider";
 
-// Ensure dark mode is applied before rendering to avoid flash
+// Simple theme initialization for light/dark only
 const initializeTheme = () => {
   const storedTheme = localStorage.getItem("meditrack-theme");
+  // Apply the stored theme if it's valid
   if (storedTheme === "dark") {
     document.documentElement.classList.add("dark");
-  } else if (storedTheme === "light") {
-    document.documentElement.classList.add("light");
   } else {
-    // System preference
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.add("light");
-    }
+    // Default to light mode otherwise
+    document.documentElement.classList.add("light");
   }
 };
 
@@ -24,7 +19,7 @@ const initializeTheme = () => {
 initializeTheme();
 
 createRoot(document.getElementById("root")!).render(
-  <ThemeProvider defaultTheme="system" storageKey="meditrack-theme">
+  <ThemeProvider defaultTheme="light" storageKey="meditrack-theme">
     <App />
   </ThemeProvider>
 );
