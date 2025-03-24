@@ -22,6 +22,11 @@
                 stroke var(--transition-duration) ease;
   }
   
+  /* Ensure select elements properly inherit theme colors */
+  select {
+    @apply bg-background text-foreground border-input;
+  }
+  
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -65,7 +70,7 @@
     --popover-foreground: 210 40% 98%;
  
     --primary: 214 97% 58%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
  
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;

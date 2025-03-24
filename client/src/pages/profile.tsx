@@ -285,18 +285,7 @@ export default function ProfilePage() {
                   </div>
                   <Button variant="outline">Set Up 2FA</Button>
                 </div>
-                <Separator />
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h3 className="font-medium">Account Verification</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Status: {user.isVerified ? 'Verified' : 'Not Verified'}
-                    </p>
-                  </div>
-                  {!user.isVerified && (
-                    <Button variant="outline">Verify Account</Button>
-                  )}
-                </div>
+
               </div>
             </CardContent>
           </Card>
