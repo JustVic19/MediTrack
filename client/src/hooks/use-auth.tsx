@@ -39,12 +39,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     data: authData,
     error,
     isLoading,
-  } = useQuery({
+  } = useQuery<{isLoggedIn: boolean; user?: User}>({
     queryKey: ["/api/auth/status"],
     queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
-  const user = authData?.isLoggedIn ? authData.user : null;
+  const user = authData?.isLoggedIn && authData?.user ? authData.user : null;
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginCredentials) => {
