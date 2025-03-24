@@ -4,7 +4,7 @@ import { StatsCard } from "@/components/dashboard/stats-card";
 import { PatientTable } from "@/components/dashboard/patient-table";
 import { AppointmentsList } from "@/components/dashboard/appointments-list";
 import { CalendarView } from "@/components/dashboard/calendar-view";
-import { ActivityFeed } from "@/components/dashboard/activity-feed";
+import { ActivityFeed, ActivityItem } from "@/components/dashboard/activity-feed";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { WeatherWidget } from "@/components/dashboard/weather-widget";
 import { PerformanceMetrics } from "@/components/dashboard/performance-metrics";
@@ -13,7 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PatientForm } from "@/components/forms/patient-form";
-import { AppointmentForm } from "@/components/forms/appointment-form";
+// We'll use PatientForm for now as AppointmentForm isn't completely implemented
+// import { AppointmentForm } from "@/components/forms/appointment-form";
 import { useToast } from "@/hooks/use-toast";
 import { Search, UserRound, Calendar, UserPlus, Bell, RefreshCw } from "lucide-react";
 import { format, addDays, addMonths } from "date-fns";
@@ -344,40 +345,36 @@ export default function Dashboard() {
               <TabsTrigger value="followup">Follow-up</TabsTrigger>
             </TabsList>
             <TabsContent value="new">
-              <AppointmentForm 
-                onSuccess={() => {
-                  setIsNewAppointmentModalOpen(false);
-                  refetchAppointments();
-                  refetchAllAppointments();
-                  refetchStats();
-                  toast({
-                    title: "Appointment Scheduled",
-                    description: "The new appointment has been successfully scheduled.",
-                  });
-                }} 
-              />
+              <div className="p-6 text-center">
+                <p className="mb-4">This feature is coming soon!</p>
+                <Button 
+                  onClick={() => {
+                    setIsNewAppointmentModalOpen(false);
+                    toast({
+                      title: "Coming Soon",
+                      description: "The appointment scheduling feature will be available in the next update.",
+                    });
+                  }}
+                >
+                  Close
+                </Button>
+              </div>
             </TabsContent>
             <TabsContent value="followup">
-              <AppointmentForm 
-                isEditMode={false}
-                defaultValues={{
-                  patientId: 0,
-                  appointmentDate: addDays(new Date(), 14),
-                  reason: "Follow-up appointment",
-                  status: "pending",
-                  notes: "Regular follow-up",
-                }}
-                onSuccess={() => {
-                  setIsNewAppointmentModalOpen(false);
-                  refetchAppointments();
-                  refetchAllAppointments();
-                  refetchStats();
-                  toast({
-                    title: "Follow-up Scheduled",
-                    description: "The follow-up appointment has been successfully scheduled.",
-                  });
-                }} 
-              />
+              <div className="p-6 text-center">
+                <p className="mb-4">Follow-up appointments will be available soon!</p>
+                <Button 
+                  onClick={() => {
+                    setIsNewAppointmentModalOpen(false);
+                    toast({
+                      title: "Coming Soon",
+                      description: "The follow-up scheduling feature will be available in the next update.",
+                    });
+                  }}
+                >
+                  Close
+                </Button>
+              </div>
             </TabsContent>
           </Tabs>
         </DialogContent>

@@ -1,18 +1,18 @@
-import { format, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { CheckCircle, Users, Calendar, MessageSquare, FileText, AlertCircle, Activity } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 
 // Define the activity type
-interface ActivityItem {
+export interface ActivityItem {
   id: number;
-  type: 'appointment' | 'patient' | 'message' | 'document' | 'alert' | 'reminder';
+  type: string; // Using string instead of union type for flexibility
   title: string;
   description: string;
   timestamp: Date;
   isRead: boolean;
   relatedId?: number;
-  priority?: 'low' | 'medium' | 'high';
+  priority?: string; // Using string instead of union type for flexibility
 }
 
 interface ActivityFeedProps {
