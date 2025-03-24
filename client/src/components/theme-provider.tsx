@@ -34,35 +34,84 @@ const applyTheme = (theme: Theme) => {
   root.classList.add(theme);
 };
 
+/**
+ * Get the current theme from localStorage or DOM
+ */
+const getCurrentTheme = (storageKey: string, defaultTheme: Theme): Theme => {
+  // First check localStorage
+  const savedTheme = localStorage.getItem(storageKey);
+  if (savedTheme === "light" || savedTheme === "dark") {
+    return savedTheme;
+  }
+  
+  // Then check DOM (in case theme was set outside of React)
+  if (typeof window !== "undefined") {
+    if (document.documentElement.classList.contains("dark")) {
+      return "dark";
+    }
+    if (document.documentElement.classList.contains("light")) {
+      return "light";
+    }
+  }
+  
+  // Default fallback
+  return defaultTheme;
+};
+
 export function ThemeProvider({
   children,
   defaultTheme = "light",
   storageKey = "meditrack-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    // Get theme from localStorage or use default
-    const savedTheme = localStorage.getItem(storageKey);
-    // Make sure the saved theme is valid (light or dark)
-    if (savedTheme === "light" || savedTheme === "dark") {
-      return savedTheme;
-    }
-    return defaultTheme;
-  });
+  const [theme, setTheme] = useState<Theme>(() => 
+    getCurrentTheme(storageKey, defaultTheme)
+  );
 
-  // Apply theme whenever it changes
+  // Apply theme whenever it changes and sync with localStorage
   useEffect(() => {
+    // Update DOM
     applyTheme(theme);
-  }, [theme]);
+    
+    // Sync localStorage
+    localStorage.setItem(storageKey, theme);
+    
+    // Add MutationObserver to detect theme class changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (
+          mutation.attributeName === "class" && 
+          mutation.target === document.documentElement
+        ) {
+          const newTheme = document.documentElement.classList.contains("dark") 
+            ? "dark" 
+            : "light";
+          
+          if (newTheme !== theme) {
+            setTheme(newTheme);
+          }
+        }
+      });
+    });
+    
+    // Start observing
+    observer.observe(document.documentElement, { 
+      attributes: true, 
+      attributeFilter: ["class"] 
+    });
+    
+    // Cleanup
+    return () => observer.disconnect();
+  }, [theme, storageKey]);
 
   // Create value object with setter that persists to localStorage
   const value = {
     theme,
     setTheme: (newTheme: Theme) => {
-      localStorage.setItem(storageKey, newTheme);
-      setTheme(newTheme);
       // Apply theme immediately for instant feedback
       applyTheme(newTheme);
+      // Update state
+      setTheme(newTheme);
     },
   };
 

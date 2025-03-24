@@ -7,13 +7,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/components/theme-provider";
+import { useEffect, useState } from "react";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  // Add local state to ensure UI consistency
+  const [currentTheme, setCurrentTheme] = useState<"dark" | "light">("light");
+  
+  // Update the local state whenever the theme context changes
+  useEffect(() => {
+    // Check the actual DOM class to ensure consistency
+    const isDark = document.documentElement.classList.contains("dark");
+    setCurrentTheme(isDark ? "dark" : "light");
+  }, [theme]);
 
-  // Function to determine active icon
+  // Function to determine active icon based on current state
   const getActiveIcon = () => {
-    if (theme === "dark") {
+    if (currentTheme === "dark") {
       return <Moon className="h-[1.2rem] w-[1.2rem] text-primary" />;
     } else {
       return <Sun className="h-[1.2rem] w-[1.2rem] text-primary" />;
@@ -26,6 +36,7 @@ export function ThemeToggle() {
     document.documentElement.classList.add("light");
     localStorage.setItem("meditrack-theme", "light");
     setTheme("light");
+    setCurrentTheme("light");
   };
 
   const setDarkTheme = () => {
@@ -33,6 +44,7 @@ export function ThemeToggle() {
     document.documentElement.classList.add("dark");
     localStorage.setItem("meditrack-theme", "dark");
     setTheme("dark");
+    setCurrentTheme("dark");
   };
 
   return (
@@ -50,23 +62,23 @@ export function ThemeToggle() {
       <DropdownMenuContent align="end" className="w-40">
         <DropdownMenuItem 
           onClick={setLightTheme}
-          className={`flex items-center justify-between cursor-pointer ${theme === "light" ? "bg-secondary" : ""}`}
+          className={`flex items-center justify-between cursor-pointer ${currentTheme === "light" ? "bg-secondary" : ""}`}
         >
           <div className="flex items-center">
-            <Sun className={`mr-2 h-4 w-4 ${theme === "light" ? "text-primary" : ""}`} />
+            <Sun className={`mr-2 h-4 w-4 ${currentTheme === "light" ? "text-primary" : ""}`} />
             <span>Light</span>
           </div>
-          {theme === "light" && <Check className="h-4 w-4 ml-2 text-primary" />}
+          {currentTheme === "light" && <Check className="h-4 w-4 ml-2 text-primary" />}
         </DropdownMenuItem>
         <DropdownMenuItem 
           onClick={setDarkTheme}
-          className={`flex items-center justify-between cursor-pointer ${theme === "dark" ? "bg-secondary" : ""}`}
+          className={`flex items-center justify-between cursor-pointer ${currentTheme === "dark" ? "bg-secondary" : ""}`}
         >
           <div className="flex items-center">
-            <Moon className={`mr-2 h-4 w-4 ${theme === "dark" ? "text-primary" : ""}`} />
+            <Moon className={`mr-2 h-4 w-4 ${currentTheme === "dark" ? "text-primary" : ""}`} />
             <span>Dark</span>
           </div>
-          {theme === "dark" && <Check className="h-4 w-4 ml-2 text-primary" />}
+          {currentTheme === "dark" && <Check className="h-4 w-4 ml-2 text-primary" />}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

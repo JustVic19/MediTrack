@@ -3,15 +3,23 @@ import App from "./App";
 import "./index.css";
 import { ThemeProvider } from "./components/theme-provider";
 
-// Simple theme initialization for light/dark only
+// Enhanced theme initialization for light/dark only
 const initializeTheme = () => {
+  // Remove any existing theme classes first to avoid conflicts
+  document.documentElement.classList.remove("light", "dark");
+  
+  // Check localStorage for user preference
   const storedTheme = localStorage.getItem("meditrack-theme");
-  // Apply the stored theme if it's valid
+  
+  // Apply based on stored preference or default to light
   if (storedTheme === "dark") {
     document.documentElement.classList.add("dark");
   } else {
-    // Default to light mode otherwise
     document.documentElement.classList.add("light");
+    // Ensure localStorage has the correct value
+    if (storedTheme !== "light") {
+      localStorage.setItem("meditrack-theme", "light");
+    }
   }
 };
 
