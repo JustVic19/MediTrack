@@ -42,6 +42,10 @@ export async function authenticate(req: Request, res: Response) {
     
     // If user not found or password doesn't match
     if (!user || user.password !== password) {
+      console.log(`Login attempt: ${username}`);
+      // For debugging only
+      console.log(`User exists: ${!!user}, Password match: ${user ? (user.password === password) : false}`);
+      
       return res.status(401).json({ 
         success: false, 
         message: "Invalid username or password" 

@@ -93,13 +93,31 @@ export class MemStorage implements IStorage {
     this.smsRemindersSent = 0;
 
     // Add default user
-    this.createUser({
+    // Create user directly to avoid async issues in constructor
+    const adminId = this.currentUserId++;
+    const adminUser: User = {
+      id: adminId,
       username: "admin",
       password: "password",
       fullName: "Dr. Sarah Johnson",
       email: "sarah.johnson@meditrack.com",
       role: "admin"
-    });
+    };
+    this.users.set(adminId, adminUser);
+    
+    // Add a test user for troubleshooting
+    const testId = this.currentUserId++;
+    const testUser: User = {
+      id: testId,
+      username: "test",
+      password: "test123",
+      fullName: "Test User",
+      email: "test@example.com",
+      role: "staff"
+    };
+    this.users.set(testId, testUser);
+    
+    console.log("Created default users:", this.users.size);
 
     // Initialize app settings
     this.appSettings = {
