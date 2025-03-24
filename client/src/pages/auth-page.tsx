@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
@@ -17,7 +18,8 @@ import {
   FormLabel, 
   FormMessage 
 } from "@/components/ui/form";
-import { Loader2 } from "lucide-react";
+import { Loader2, LogIn } from "lucide-react";
+import { FaApple, FaGoogle } from "react-icons/fa";
 
 const loginSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -78,16 +80,42 @@ export default function AuthPage() {
     return <Redirect to="/" />;
   }
 
+  // Functions to handle social login
+  const handleGoogleLogin = () => {
+    toast({
+      title: "Google Login",
+      description: "Google login integration will be implemented soon",
+    });
+  };
+
+  const handleAppleLogin = () => {
+    toast({
+      title: "Apple Login",
+      description: "Apple login integration will be implemented soon",
+    });
+  };
+
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-background to-secondary/10">
-      {/* Left side - Authentication forms */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6">
-        <Card className="w-full max-w-md">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background to-secondary/10 p-4">
+      <div className="w-full max-w-md">
+        {/* Logo and Title */}
+        <div className="flex flex-col items-center mb-6">
+          <img 
+            src="/assets/meditrack-logo.svg" 
+            alt="MediTrack Logo" 
+            className="h-24 w-24 mb-2"
+          />
+          <h1 className="text-3xl font-bold text-primary">MediTrack</h1>
+          <p className="text-muted-foreground text-center mt-2">
+            Medical Practice Management System
+          </p>
+        </div>
+
+        <Card className="w-full">
           <CardHeader>
-            <CardTitle className="text-xl font-bold">MediTrack</CardTitle>
-            <CardDescription>
-              Sign in to your account or create a new one to access the patient management system
-            </CardDescription>
+            <CardTitle className="text-xl font-bold text-center">
+              {activeTab === "login" ? "Sign in to your account" : "Create your account"}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab}>
@@ -142,6 +170,36 @@ export default function AuthPage() {
                         "Sign In"
                       )}
                     </Button>
+                    
+                    <div className="relative my-6">
+                      <div className="absolute inset-0 flex items-center">
+                        <Separator className="w-full" />
+                      </div>
+                      <div className="relative flex justify-center">
+                        <span className="bg-background px-2 text-xs text-muted-foreground">
+                          Or continue with
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={handleGoogleLogin}
+                      >
+                        <FaGoogle className="mr-2 h-4 w-4" />
+                        Google
+                      </Button>
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={handleAppleLogin}
+                      >
+                        <FaApple className="mr-2 h-4 w-4" />
+                        Apple
+                      </Button>
+                    </div>
                   </form>
                 </Form>
               </TabsContent>
@@ -239,6 +297,36 @@ export default function AuthPage() {
                         "Create Account"
                       )}
                     </Button>
+                    
+                    <div className="relative my-6">
+                      <div className="absolute inset-0 flex items-center">
+                        <Separator className="w-full" />
+                      </div>
+                      <div className="relative flex justify-center">
+                        <span className="bg-background px-2 text-xs text-muted-foreground">
+                          Or sign up with
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={handleGoogleLogin}
+                      >
+                        <FaGoogle className="mr-2 h-4 w-4" />
+                        Google
+                      </Button>
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={handleAppleLogin}
+                      >
+                        <FaApple className="mr-2 h-4 w-4" />
+                        Apple
+                      </Button>
+                    </div>
                   </form>
                 </Form>
               </TabsContent>
@@ -254,34 +342,10 @@ export default function AuthPage() {
             </div>
           </CardFooter>
         </Card>
-      </div>
-
-      {/* Right side - Hero/Info section */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary/10 to-primary flex-col items-center justify-center p-12 text-center">
-        <div className="max-w-md">
-          <h1 className="text-4xl font-bold tracking-tight mb-4">MediTrack Doctor Portal</h1>
-          <p className="text-lg mb-6">
-            Access your patient records, manage appointments, and provide better care with our comprehensive medical practice management system.
-          </p>
-          <div className="grid grid-cols-2 gap-4 mt-8">
-            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg">
-              <h3 className="font-semibold text-lg mb-2">Patient Management</h3>
-              <p className="text-sm">Keep track of patient information, medical history, and treatment plans in one place.</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg">
-              <h3 className="font-semibold text-lg mb-2">Appointment Scheduling</h3>
-              <p className="text-sm">Schedule, reschedule, and manage appointments with a few clicks.</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg">
-              <h3 className="font-semibold text-lg mb-2">SMS Reminders</h3>
-              <p className="text-sm">Reduce no-shows with automated appointment reminders sent directly to patients.</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg">
-              <h3 className="font-semibold text-lg mb-2">Medical Records</h3>
-              <p className="text-sm">Maintain detailed patient histories and access them when needed.</p>
-            </div>
-          </div>
-        </div>
+        
+        <p className="text-sm text-muted-foreground text-center mt-6">
+          By signing in, you agree to our Terms of Service and Privacy Policy.
+        </p>
       </div>
     </div>
   );
