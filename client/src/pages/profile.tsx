@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Pencil, Save, User, Upload } from "lucide-react";
-import MainLayout from "@/layouts/main-layout";
+//import MainLayout from "@/layouts/main-layout";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -107,19 +107,16 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <MainLayout>
-        <div className="flex items-center justify-center h-96">
-          <p className="text-muted-foreground">Loading user profile...</p>
-        </div>
-      </MainLayout>
+      <div className="flex items-center justify-center h-96">
+        <p className="text-muted-foreground">Loading user profile...</p>
+      </div>
     );
   }
 
   return (
-    <MainLayout>
-      <div className="container mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-6">Profile</h1>
-        
+    <div className="container mx-auto py-8">
+      <h1 className="text-3xl font-bold mb-6">Profile</h1>
+      
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Profile Image Card */}
           <Card className="md:col-span-1">
@@ -291,6 +288,5 @@ export default function ProfilePage() {
           </Card>
         </div>
       </div>
-    </MainLayout>
   );
 }

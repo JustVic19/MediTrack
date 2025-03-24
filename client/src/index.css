@@ -22,9 +22,41 @@
                 stroke var(--transition-duration) ease;
   }
   
-  /* Ensure select elements properly inherit theme colors */
-  select {
+  /* Ensure form elements properly inherit theme colors */
+  select, input, textarea {
     @apply bg-background text-foreground border-input;
+  }
+  
+  /* Improve contrast for placeholder text */
+  ::placeholder {
+    @apply text-muted-foreground/70;
+  }
+  
+  /* Ensure buttons in dark mode have proper contrast */
+  .dark button {
+    @apply transition-colors;
+  }
+  
+  /* Ensure charts and data visualizations work in dark mode */
+  .dark .recharts-cartesian-grid-horizontal line,
+  .dark .recharts-cartesian-grid-vertical line {
+    @apply stroke-border;
+  }
+  
+  .dark .recharts-text {
+    @apply fill-foreground;
+  }
+  
+  /* Fix table and card borders in dark mode */
+  .dark table, .dark .border {
+    @apply border-border;
+  }
+  
+  /* Enhance form inputs in dark mode */
+  .dark input:focus, 
+  .dark select:focus, 
+  .dark textarea:focus {
+    @apply border-primary ring-1 ring-primary;
   }
   
   :root {
