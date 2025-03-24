@@ -31,7 +31,7 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-white border-r border-gray-200">
+    <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-background border-r border-border">
       <div className="flex flex-col flex-grow pt-5 pb-4 overflow-y-auto">
         <div className="flex items-center justify-between flex-shrink-0 px-4 mb-5">
           <h1 className="text-2xl font-bold text-primary">MediTrack</h1>
@@ -49,16 +49,16 @@ export function Sidebar() {
                 className={cn(
                   "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
                   isActive 
-                    ? "bg-primary text-white" 
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    ? "bg-primary text-primary-foreground" 
+                    : "text-foreground hover:bg-secondary/50 hover:text-foreground"
                 )}
               >
                 <item.icon 
                   className={cn(
                     "mr-3 flex-shrink-0 h-6 w-6",
                     isActive 
-                      ? "text-white" 
-                      : "text-gray-400 group-hover:text-gray-500"
+                      ? "text-primary-foreground" 
+                      : "text-muted-foreground group-hover:text-foreground"
                   )} 
                 />
                 {item.name}
@@ -67,7 +67,7 @@ export function Sidebar() {
           })}
         </nav>
       </div>
-      <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
+      <div className="flex-shrink-0 flex border-t border-border p-4">
         <div className="flex-shrink-0 w-full group block">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -79,10 +79,10 @@ export function Sidebar() {
                 />
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+                <p className="text-sm font-medium text-foreground">
                   {user?.fullName || 'Doctor'}
                 </p>
-                <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">
+                <p className="text-xs font-medium text-muted-foreground">
                   {user?.role || 'Doctor'}
                 </p>
               </div>
@@ -92,7 +92,6 @@ export function Sidebar() {
               size="sm"
               onClick={handleLogout}
               disabled={logoutMutation.isPending}
-              className="text-gray-500 hover:text-gray-700"
             >
               <LogOut className="h-4 w-4" />
             </Button>
