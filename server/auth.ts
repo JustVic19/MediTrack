@@ -80,15 +80,7 @@ export async function authenticate(req: Request, res: Response) {
       });
     }
 
-    // Check if user's email is verified
-    if (user.isVerified === false) {
-      return res.status(403).json({
-        success: false,
-        message: "Email not verified. Please check your email for the verification link.",
-        requiresVerification: true,
-        email: user.email
-      });
-    }
+    // Email verification check removed
 
     // Set user in session
     if (req.session) {
@@ -136,29 +128,13 @@ export async function register(req: Request, res: Response) {
       });
     }
 
-    // Generate verification token
-    const { token, expires } = generateVerificationToken();
-
-    // Create the user with verification token
+    // Create the user (with verified status)
     const newUser = await storage.createUser({
       ...userData,
-      isVerified: false,
-      verificationToken: token,
-      verificationExpires: expires
+      isVerified: true,
+      verificationToken: null,
+      verificationExpires: null
     });
-
-    // Send verification email
-    try {
-      await sendVerificationEmail(
-        userData.email,
-        token,
-        userData.username,
-        userData.fullName
-      );
-    } catch (error) {
-      console.error('Failed to send verification email:', error);
-      // Continue registration process even if email fails
-    }
     
     // Remove password from response
     const { password: _, ...safeUser } = newUser;
@@ -166,7 +142,7 @@ export async function register(req: Request, res: Response) {
     return res.status(201).json({
       success: true,
       user: safeUser,
-      message: "User registered successfully. Please check your email to verify your account before logging in."
+      message: "User registered successfully. You can now log in to your account."
     });
   } catch (error) {
     console.error("Registration error:", error);
@@ -215,19 +191,7 @@ export async function checkAuthStatus(req: Request, res: Response) {
         });
       }
       
-      // Check if user's email is verified
-      if (user.isVerified === false) {
-        // Clear session for unverified users
-        req.session.destroy((err: any) => {
-          if (err) console.error('Error destroying session:', err);
-        });
-        
-        return res.status(200).json({ 
-          isLoggedIn: false,
-          requiresVerification: true,
-          message: "Email not verified. Please check your email for the verification link."
-        });
-      }
+      // Email verification check removed
       
       // Remove password from response
       const { password: _, ...safeUser } = user;

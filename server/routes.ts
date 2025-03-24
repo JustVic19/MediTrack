@@ -36,8 +36,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/auth/register', register);
   app.post('/api/auth/logout', logout);
   app.get('/api/auth/status', checkAuthStatus);
-  app.get('/api/auth/verify-email', verifyEmail);
-  app.post('/api/auth/resend-verification', resendVerification);
   app.post('/api/auth/request-password-reset', requestPasswordReset);
   app.post('/api/auth/reset-password', resetPassword);
   
