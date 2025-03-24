@@ -20,52 +20,61 @@ const initialState: ThemeProviderState = {
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
+/**
+ * Apply theme to document root element
+ */
+const applyTheme = (theme: Theme) => {
+  const root = window.document.documentElement;
+  
+  // Clear existing theme classes
+  root.classList.remove("light", "dark");
+  
+  // Apply new theme
+  if (theme === "system") {
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    root.classList.add(systemTheme);
+  } else {
+    root.classList.add(theme);
+  }
+};
+
 export function ThemeProvider({
   children,
   defaultTheme = "system",
-  storageKey = "meditrack-ui-theme",
+  storageKey = "meditrack-theme",
   ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
   );
 
+  // Apply theme whenever it changes
   useEffect(() => {
-    const root = window.document.documentElement;
+    applyTheme(theme);
     
-    // First remove both classes to ensure clean state
-    root.classList.remove("light", "dark");
-    
+    // Set up system theme change listener
     if (theme === "system") {
-      // Use matchMedia to detect system preference
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
-      
-      // Add the appropriate class based on system preference
-      root.classList.add(systemTheme);
-      
-      // Set up listener for system preference changes
       const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-      const handleChange = (e: MediaQueryListEvent) => {
+      
+      const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+        const root = window.document.documentElement;
         root.classList.remove("light", "dark");
         root.classList.add(e.matches ? "dark" : "light");
       };
       
-      mediaQuery.addEventListener("change", handleChange);
-      return () => mediaQuery.removeEventListener("change", handleChange);
-    } else {
-      // Add the specified theme class
-      root.classList.add(theme);
+      mediaQuery.addEventListener("change", handleSystemThemeChange);
+      return () => mediaQuery.removeEventListener("change", handleSystemThemeChange);
     }
   }, [theme]);
 
+  // Create value object with setter that persists to localStorage
   const value = {
     theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
+    setTheme: (newTheme: Theme) => {
+      localStorage.setItem(storageKey, newTheme);
+      setTheme(newTheme);
+      // Apply theme immediately for instant feedback
+      applyTheme(newTheme);
     },
   };
 
@@ -76,11 +85,12 @@ export function ThemeProvider({
   );
 }
 
-export const useTheme = () => {
+// Custom hook to use the theme context
+export function useTheme() {
   const context = useContext(ThemeProviderContext);
   
   if (context === undefined)
     throw new Error("useTheme must be used within a ThemeProvider");
   
   return context;
-};
+}

@@ -3,6 +3,25 @@
 @tailwind utilities;
 
 @layer base {
+  /* Add smooth transitions for all theme changes */
+  :root {
+    color-scheme: light;
+    --transition-duration: 0.3s;
+  }
+  
+  .dark {
+    color-scheme: dark;
+  }
+  
+  /* Apply transitions to elements that change with theme */
+  *, *::before, *::after {
+    transition: background-color var(--transition-duration) ease,
+                border-color var(--transition-duration) ease,
+                color var(--transition-duration) ease,
+                fill var(--transition-duration) ease,
+                stroke var(--transition-duration) ease;
+  }
+  
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;

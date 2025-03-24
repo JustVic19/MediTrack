@@ -27,6 +27,32 @@ export function ThemeToggle() {
     }
   };
 
+  // Direct handler functions to ensure theme changes properly
+  const setLightTheme = () => {
+    document.documentElement.classList.remove("dark");
+    document.documentElement.classList.add("light");
+    localStorage.setItem("meditrack-theme", "light");
+    setTheme("light");
+  };
+
+  const setDarkTheme = () => {
+    document.documentElement.classList.remove("light");
+    document.documentElement.classList.add("dark");
+    localStorage.setItem("meditrack-theme", "dark");
+    setTheme("dark");
+  };
+
+  const setSystemTheme = () => {
+    document.documentElement.classList.remove("light", "dark");
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.add("light");
+    }
+    localStorage.setItem("meditrack-theme", "system");
+    setTheme("system");
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -41,7 +67,7 @@ export function ThemeToggle() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40">
         <DropdownMenuItem 
-          onClick={() => setTheme("light")}
+          onClick={setLightTheme}
           className={`flex items-center justify-between cursor-pointer ${theme === "light" ? "bg-secondary" : ""}`}
         >
           <div className="flex items-center">
@@ -51,7 +77,7 @@ export function ThemeToggle() {
           {theme === "light" && <Check className="h-4 w-4 ml-2 text-primary" />}
         </DropdownMenuItem>
         <DropdownMenuItem 
-          onClick={() => setTheme("dark")}
+          onClick={setDarkTheme}
           className={`flex items-center justify-between cursor-pointer ${theme === "dark" ? "bg-secondary" : ""}`}
         >
           <div className="flex items-center">
@@ -61,7 +87,7 @@ export function ThemeToggle() {
           {theme === "dark" && <Check className="h-4 w-4 ml-2 text-primary" />}
         </DropdownMenuItem>
         <DropdownMenuItem 
-          onClick={() => setTheme("system")}
+          onClick={setSystemTheme}
           className={`flex items-center justify-between cursor-pointer ${theme === "system" ? "bg-secondary" : ""}`}
         >
           <div className="flex items-center">
