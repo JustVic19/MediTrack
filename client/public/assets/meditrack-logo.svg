@@ -3,7 +3,7 @@
   <!-- Heart Shape -->
   <path d="M100 180C94.477 180 88.953 177.791 85.119 173.357C49.925 132.632 30 111.053 30 80C30 55.147 50.147 35 75 35C86.062 35 96.578 39.507 104 47.301C111.422 39.507 121.938 35 133 35C157.853 35 178 55.147 178 80C178 111.053 158.075 132.632 122.881 173.357C119.047 177.791 113.523 180 108 180H100Z" fill="#4F46E5" />
   
-  <!-- Medical Cross -->
-  <rect x="85" y="75" width="30" height="70" rx="5" fill="white" />
-  <rect x="65" y="95" width="70" height="30" rx="5" fill="white" />
+  <!-- Medical Cross - Centered -->
+  <rect x="85" y="70" width="30" height="80" rx="5" fill="white" />
+  <rect x="60" y="95" width="80" height="30" rx="5" fill="white" />
 </svg>
