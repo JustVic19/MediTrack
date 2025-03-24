@@ -74,7 +74,7 @@ export async function authenticate(req: Request, res: Response) {
       // For debugging only
       console.log(`User exists: ${!!user}, Password match: ${user ? (user.password === password) : false}`);
       
-      return res.status(401).json({ 
+      return res.status(200).json({ 
         success: false, 
         message: "Invalid username or password" 
       });
@@ -136,13 +136,19 @@ export async function register(req: Request, res: Response) {
       verificationExpires: null
     });
     
+    // Set user in session (auto login after registration)
+    if (req.session) {
+      req.session.userId = newUser.id;
+      req.session.userRole = newUser.role;
+    }
+    
     // Remove password from response
     const { password: _, ...safeUser } = newUser;
     
     return res.status(201).json({
       success: true,
       user: safeUser,
-      message: "User registered successfully. You can now log in to your account."
+      message: "User registered successfully. You are now logged in."
     });
   } catch (error) {
     console.error("Registration error:", error);

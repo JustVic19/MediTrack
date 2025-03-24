@@ -24,6 +24,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       secret: "meditrack-secret-key", // In production, this should be an environment variable
       resave: false,
       saveUninitialized: false,
+      store: storage.sessionStore,
       cookie: {
         secure: process.env.NODE_ENV === "production",
         maxAge: 24 * 60 * 60 * 1000, // 24 hours

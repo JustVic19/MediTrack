@@ -42,6 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   } = useQuery<{isLoggedIn: boolean; user?: User}>({
     queryKey: ["/api/auth/status"],
     queryFn: getQueryFn({ on401: "returnNull" }),
+    staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 1, // Limit retry attempts in case of auth issues
   });
 
