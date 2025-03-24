@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { Logo } from "@/components/ui/logo";
 
 export function Sidebar() {
   const [location] = useLocation();
@@ -34,7 +35,10 @@ export function Sidebar() {
     <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-background border-r border-border">
       <div className="flex flex-col flex-grow pt-5 pb-4 overflow-y-auto">
         <div className="flex items-center justify-between flex-shrink-0 px-4 mb-5">
-          <h1 className="text-2xl font-bold text-primary">MediTrack</h1>
+          <div className="flex items-center">
+            <Logo size={32} className="mr-2" />
+            <h1 className="text-2xl font-bold text-primary">MediTrack</h1>
+          </div>
           <div className="bg-card p-1 rounded-md shadow-sm border border-border">
             <ThemeToggle />
           </div>
