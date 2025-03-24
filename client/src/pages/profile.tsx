@@ -85,7 +85,7 @@ export default function ProfilePage() {
         const updatedUser = await response.json();
         
         // Update the cached user data
-        queryClient.setQueryData(["/api/user"], updatedUser);
+        queryClient.invalidateQueries({ queryKey: ["/api/auth/status"] });
         
         toast({
           title: "Profile updated",

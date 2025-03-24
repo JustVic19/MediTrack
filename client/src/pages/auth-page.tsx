@@ -382,17 +382,7 @@ export default function AuthPage() {
           By signing in, you agree to our Terms of Service and Privacy Policy.
         </p>
         
-        {/* Temporary direct dashboard access for testing */}
-        <div className="flex justify-center mt-4">
-          <Button 
-            variant="outline" 
-            onClick={() => {
-              window.location.href = '/';
-            }}
-          >
-            Direct Dashboard Access (Testing)
-          </Button>
-        </div>
+
       </div>
       
       {/* Password Reset Modal */}
