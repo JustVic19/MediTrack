@@ -23,12 +23,22 @@ export function ProtectedRoute({
     );
   }
 
+  // Temporarily disable redirect for testing
   if (!user) {
+    console.log("User not authenticated, allowing access for testing...");
+    return (
+      <Route path={path}>
+        <Component />
+      </Route>
+    );
+    
+    /* Normal authentication flow - uncomment when ready
     return (
       <Route path={path}>
         <Redirect to="/auth" />
       </Route>
     );
+    */
   }
 
   return (

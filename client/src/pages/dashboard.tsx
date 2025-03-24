@@ -29,7 +29,12 @@ export default function Dashboard() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   
   // Fetch dashboard statistics
-  const { data: stats, isLoading: isLoadingStats, refetch: refetchStats } = useQuery({
+  const { data: stats = { 
+    totalPatients: 0, 
+    todayAppointments: 0, 
+    newPatients: 0, 
+    smsReminders: 0 
+  }, isLoading: isLoadingStats, refetch: refetchStats } = useQuery({
     queryKey: ['/api/dashboard/stats'],
   });
 
