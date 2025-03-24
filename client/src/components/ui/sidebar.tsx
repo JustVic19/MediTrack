@@ -15,11 +15,16 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Logo } from "@/components/ui/logo";
 
 export function Sidebar() {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const { user, logoutMutation } = useAuth();
-
+  
   const handleLogout = () => {
-    logoutMutation.mutate();
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        // Redirect to login page after successful logout
+        setLocation('/auth');
+      }
+    });
   };
 
   const navigation = [
@@ -76,11 +81,11 @@ export function Sidebar() {
       <div className="flex-shrink-0 flex border-t border-border p-4">
         <div className="flex-shrink-0 w-full group block">
           <div className="flex items-center justify-between">
-            <div className="flex items-center">
+            <Link href="/profile" className="flex items-center hover:opacity-80 transition-opacity">
               <div>
                 <img 
-                  className="inline-block h-9 w-9 rounded-full" 
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" 
+                  className="inline-block h-9 w-9 rounded-full border-2 border-primary/20" 
+                  src={user?.profileImage || "https://ui-avatars.com/api/?name=" + encodeURIComponent(user?.fullName || 'User') + "&background=random"}
                   alt="Profile" 
                 />
               </div>
@@ -89,10 +94,10 @@ export function Sidebar() {
                   {user?.fullName || 'Doctor'}
                 </p>
                 <p className="text-xs font-medium text-muted-foreground">
-                  {user?.role || 'Doctor'}
+                  {user?.role || 'Doctor'} • View Profile
                 </p>
               </div>
-            </div>
+            </Link>
             <Button
               variant="ghost"
               size="sm"
