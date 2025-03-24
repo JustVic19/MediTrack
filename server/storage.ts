@@ -7,6 +7,8 @@ import {
 } from "@shared/schema";
 import { format } from "date-fns";
 import twilio from "twilio";
+import session from "express-session";
+import createMemoryStore from "memorystore";
 
 // Interface for storage operations
 export interface IStorage {
@@ -53,6 +55,9 @@ export interface IStorage {
     newPatients: number;
     smsReminders: number;
   }>;
+
+  // Session store
+  sessionStore: session.Store;
 }
 
 export class MemStorage implements IStorage {
@@ -67,8 +72,15 @@ export class MemStorage implements IStorage {
   private currentAppointmentId: number;
   private currentHistoryId: number;
   private smsRemindersSent: number;
+  
+  // Session store for express-session
+  public sessionStore: session.Store;
 
   constructor() {
+    const MemoryStore = createMemoryStore(session);
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000, // prune expired entries every 24h
+    });
     this.users = new Map();
     this.patients = new Map();
     this.appointments = new Map();

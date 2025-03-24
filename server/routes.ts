@@ -4,8 +4,29 @@ import { storage } from "./storage";
 import { insertPatientSchema, insertAppointmentSchema, insertPatientHistorySchema, insertSettingsSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+import session from "express-session";
+import { authenticate, register, logout, checkAuthStatus, requireAuth } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup express-session middleware
+  app.use(
+    session({
+      secret: "meditrack-secret-key", // In production, this should be an environment variable
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      },
+    })
+  );
+
+  // Authentication routes
+  app.post('/api/auth/login', authenticate);
+  app.post('/api/auth/register', register);
+  app.post('/api/auth/logout', logout);
+  app.get('/api/auth/status', checkAuthStatus);
+  
   // prefix all routes with /api
   const apiRouter = app.route('/api');
 

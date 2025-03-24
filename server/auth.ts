@@ -2,6 +2,15 @@ import { Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { storage } from "./storage";
 import { insertUserSchema } from "@shared/schema";
+import session from "express-session";
+
+// Extend express Request with session
+declare module "express-session" {
+  interface Session {
+    userId?: number;
+    userRole?: string;
+  }
+}
 
 // Login schema
 const loginSchema = z.object({
@@ -108,7 +117,7 @@ export async function register(req: Request, res: Response) {
 // Logout the current user
 export async function logout(req: Request, res: Response) {
   if (req.session) {
-    req.session.destroy((err) => {
+    req.session.destroy((err: any) => {
       if (err) {
         return res.status(500).json({ 
           success: false, 
