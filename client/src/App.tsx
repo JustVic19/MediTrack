@@ -11,6 +11,7 @@ import PatientDetail from "@/pages/patient-detail";
 import Appointments from "@/pages/appointments";
 import PatientHistory from "@/pages/patient-history";
 import Settings from "@/pages/settings";
+import ProfilePage from "@/pages/profile";
 import AuthPage from "@/pages/auth-page";
 import NotFound from "@/pages/not-found";
 import MainLayout from "@/layouts/main-layout";
@@ -72,6 +73,15 @@ function AppRoutes() {
         component={() => (
           <MainLayout>
             <Settings />
+          </MainLayout>
+        )} 
+      />
+      
+      <ProtectedRoute 
+        path="/profile" 
+        component={() => (
+          <MainLayout>
+            <ProfilePage />
           </MainLayout>
         )} 
       />

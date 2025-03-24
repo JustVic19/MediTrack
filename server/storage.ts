@@ -186,6 +186,8 @@ export class MemStorage implements IStorage {
     const user: User = { 
       ...insertUser, 
       id, 
+      role: insertUser.role || 'staff',
+      profileImage: insertUser.profileImage || null,
       isVerified: insertUser.isVerified !== undefined ? insertUser.isVerified : true,
       verificationToken: insertUser.verificationToken || null,
       verificationExpires: insertUser.verificationExpires || null,

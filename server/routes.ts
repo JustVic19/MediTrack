@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertPatientSchema, insertAppointmentSchema, insertPatientHistorySchema, insertSettingsSchema } from "@shared/schema";
+import { insertPatientSchema, insertAppointmentSchema, insertPatientHistorySchema, insertSettingsSchema, insertUserSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import session from "express-session";
@@ -391,6 +391,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       console.error('Error updating settings:', error);
       res.status(500).json({ error: 'Failed to update settings' });
+    }
+  });
+
+  // User profile endpoints
+  app.get('/api/user', requireAuth, async (req, res) => {
+    try {
+      // If we get here, requireAuth middleware has already verified that req.session.userId exists
+      const userId = req.session.userId as number;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      
+      // Remove sensitive information
+      const { password, ...safeUser } = user;
+      res.json(safeUser);
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      res.status(500).json({ error: 'Failed to fetch user profile' });
+    }
+  });
+
+  app.patch('/api/users/:id', requireAuth, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const sessionUserId = req.session.userId as number;
+      
+      // Users can only update their own profile unless they're an admin
+      if (userId !== sessionUserId && req.session.userRole !== 'admin') {
+        return res.status(403).json({ error: 'You are not authorized to update this user' });
+      }
+      
+      // Parse the updateable fields
+      const updateSchema = insertUserSchema.partial().pick({
+        fullName: true,
+        email: true,
+        profileImage: true
+      });
+      
+      const userData = updateSchema.parse(req.body);
+      const updatedUser = await storage.updateUser(userId, userData);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      
+      // Remove sensitive information
+      const { password, ...safeUser } = updatedUser;
+      res.json(safeUser);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ error: validationError.message });
+      }
+      console.error('Error updating user:', error);
+      res.status(500).json({ error: 'Failed to update user' });
     }
   });
 
