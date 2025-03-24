@@ -41,6 +41,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/auth/request-password-reset', requestPasswordReset);
   app.post('/api/auth/reset-password', resetPassword);
   
+  // Debug endpoint for development - would be removed in production
+  app.get('/api/auth/users', async (req, res) => {
+    try {
+      const usersMap = storage.getUsers();
+      const users = Array.from(usersMap.values());
+      // Remove sensitive data like passwords
+      const safeUsers = users.map(user => {
+        const { password, ...safeUser } = user;
+        return safeUser;
+      });
+      res.json(safeUsers);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      res.status(500).json({ error: 'Failed to fetch users' });
+    }
+  });
+  
   // prefix all routes with /api
   const apiRouter = app.route('/api');
 
