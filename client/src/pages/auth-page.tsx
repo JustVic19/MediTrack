@@ -98,8 +98,10 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background to-secondary/10 p-4">
-      <div className="absolute top-4 right-4">
-        <ThemeToggle />
+      <div className="absolute top-4 right-4 z-10">
+        <div className="bg-card p-1 rounded-md shadow-md border border-border">
+          <ThemeToggle />
+        </div>
       </div>
       <div className="w-full max-w-md">
         {/* Logo and Title */}
