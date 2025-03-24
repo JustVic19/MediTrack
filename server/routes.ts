@@ -5,7 +5,17 @@ import { insertPatientSchema, insertAppointmentSchema, insertPatientHistorySchem
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import session from "express-session";
-import { authenticate, register, logout, checkAuthStatus, requireAuth } from "./auth";
+import { 
+  authenticate, 
+  register, 
+  logout, 
+  checkAuthStatus, 
+  requireAuth, 
+  verifyEmail,
+  resendVerification,
+  requestPasswordReset,
+  resetPassword
+} from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup express-session middleware
@@ -26,6 +36,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/auth/register', register);
   app.post('/api/auth/logout', logout);
   app.get('/api/auth/status', checkAuthStatus);
+  app.get('/api/auth/verify-email', verifyEmail);
+  app.post('/api/auth/resend-verification', resendVerification);
+  app.post('/api/auth/request-password-reset', requestPasswordReset);
+  app.post('/api/auth/reset-password', resetPassword);
   
   // prefix all routes with /api
   const apiRouter = app.route('/api');

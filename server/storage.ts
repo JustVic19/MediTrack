@@ -15,7 +15,11 @@ export interface IStorage {
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByVerificationToken(token: string): Promise<User | undefined>;
+  getUserByPasswordResetToken(token: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUser(id: number, userData: Partial<User>): Promise<User | undefined>;
 
   // Patient operations
   getAllPatients(): Promise<Patient[]>;
@@ -101,7 +105,12 @@ export class MemStorage implements IStorage {
       password: "password",
       fullName: "Dr. Sarah Johnson",
       email: "sarah.johnson@meditrack.com",
-      role: "admin"
+      role: "admin",
+      isVerified: true,
+      verificationToken: null,
+      verificationExpires: null,
+      passwordResetToken: null,
+      passwordResetExpires: null
     };
     this.users.set(adminId, adminUser);
     
@@ -113,7 +122,12 @@ export class MemStorage implements IStorage {
       password: "test123",
       fullName: "Test User",
       email: "test@example.com",
-      role: "staff"
+      role: "staff",
+      isVerified: true,
+      verificationToken: null,
+      verificationExpires: null,
+      passwordResetToken: null,
+      passwordResetExpires: null
     };
     this.users.set(testId, testUser);
     
@@ -142,11 +156,46 @@ export class MemStorage implements IStorage {
     );
   }
 
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.email === email
+    );
+  }
+
+  async getUserByVerificationToken(token: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.verificationToken === token
+    );
+  }
+
+  async getUserByPasswordResetToken(token: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.passwordResetToken === token
+    );
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
-    const user: User = { ...insertUser, id };
+    const user: User = { 
+      ...insertUser, 
+      id, 
+      isVerified: insertUser.isVerified !== undefined ? insertUser.isVerified : true,
+      verificationToken: insertUser.verificationToken || null,
+      verificationExpires: insertUser.verificationExpires || null,
+      passwordResetToken: null,
+      passwordResetExpires: null
+    };
     this.users.set(id, user);
     return user;
+  }
+
+  async updateUser(id: number, userData: Partial<User>): Promise<User | undefined> {
+    const existingUser = this.users.get(id);
+    if (!existingUser) return undefined;
+
+    const updatedUser = { ...existingUser, ...userData };
+    this.users.set(id, updatedUser);
+    return updatedUser;
   }
 
   // Patient methods

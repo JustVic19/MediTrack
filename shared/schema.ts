@@ -23,6 +23,11 @@ export const insertUserSchema = createInsertSchema(users).pick({
   fullName: true,
   email: true,
   role: true,
+  isVerified: true,
+  verificationToken: true,
+  verificationExpires: true,
+  passwordResetToken: true,
+  passwordResetExpires: true,
 });
 
 // Patient schema
