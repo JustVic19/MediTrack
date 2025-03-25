@@ -483,7 +483,7 @@ function SymptomCheckHistory({ patientId }: { patientId: number }) {
             </CardContent>
             <CardFooter>
               <Button variant="link" className="p-0" asChild>
-                <a href={`/symptom-checker/${check.id}`}>View Details</a>
+                <a href={`/symptom-checker?id=${check.id}`}>View Details</a>
               </Button>
             </CardFooter>
           </Card>
@@ -550,7 +550,11 @@ function SymptomCheckerDetailPage() {
         <p className="text-muted-foreground mb-4">
           {error instanceof Error ? error.message : 'Failed to load symptom check details'}
         </p>
-        <Button onClick={() => setLocation('/symptom-checker')}>
+        <Button onClick={() => {
+          // Try to preserve patient ID if available
+          const patientId = searchParams.get('patientId');
+          setLocation(patientId ? `/symptom-checker?patientId=${patientId}` : '/symptom-checker');
+        }}>
           Return to Symptom Checker
         </Button>
       </div>
@@ -595,7 +599,11 @@ function SymptomCheckerDetailPage() {
           {getStatusBadge(check.status)}
           <Button 
             variant="outline" 
-            onClick={() => setLocation('/symptom-checker')}
+            onClick={() => {
+              // Get patient ID from check or try from query params
+              const patientId = check.patientId || searchParams.get('patientId');
+              setLocation(patientId ? `/symptom-checker?patientId=${patientId}` : '/symptom-checker');
+            }}
           >
             Back
           </Button>
