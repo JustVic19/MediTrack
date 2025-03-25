@@ -472,7 +472,7 @@ function SymptomCheckHistory({ patientId }: { patientId: number }) {
                 <div className="flex flex-wrap gap-4">
                   <div>
                     <span className="text-sm font-medium">Severity:</span>
-                    <span className="text-sm ml-1">{severityLevels[check.severity - 1]}</span>
+                    <span className="text-sm ml-1">{severityLevels[check.severity - 1]?.label || `Level ${check.severity}`}</span>
                   </div>
                   <div>
                     <span className="text-sm font-medium">Duration:</span>
@@ -562,12 +562,12 @@ function SymptomCheckerDetailPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'completed':
-        return <Badge variant="success" className="flex items-center gap-1">
+        return <Badge variant="outline" className="flex items-center gap-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 border-green-300 dark:border-green-700">
           <Check className="h-4 w-4" />
           Completed
         </Badge>;
       case 'pending':
-        return <Badge variant="warning" className="flex items-center gap-1">
+        return <Badge variant="outline" className="flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 border-yellow-300 dark:border-yellow-700">
           <Clock className="h-4 w-4" />
           Pending
         </Badge>;
@@ -608,7 +608,7 @@ function SymptomCheckerDetailPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">{severityLevels[check.severity - 1]}</p>
+            <p className="text-2xl font-bold">{severityLevels[check.severity - 1]?.label || `Level ${check.severity}`}</p>
           </CardContent>
         </Card>
         
