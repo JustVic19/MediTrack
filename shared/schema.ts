@@ -16,9 +16,11 @@ export const users = pgTable("users", {
   verificationExpires: timestamp("verification_expires"),
   passwordResetToken: text("password_reset_token"),
   passwordResetExpires: timestamp("password_reset_expires"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
+export const insertUserSchema = createInsertSchema(users, {
   username: true,
   password: true,
   fullName: true,
@@ -30,6 +32,10 @@ export const insertUserSchema = createInsertSchema(users).pick({
   verificationExpires: true,
   passwordResetToken: true,
   passwordResetExpires: true,
+}).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
 // Patient schema
@@ -47,12 +53,14 @@ export const patients = pgTable("patients", {
   smsOptIn: boolean("sms_opt_in").default(false).notNull(),
   status: varchar("status", { length: 20 }).default("active").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
   lastVisit: timestamp("last_visit"),
 });
 
 export const insertPatientSchema = createInsertSchema(patients).omit({
   id: true,
-  createdAt: true
+  createdAt: true,
+  updatedAt: true
 });
 
 // Appointment schema
@@ -65,12 +73,14 @@ export const appointments = pgTable("appointments", {
   notes: text("notes"),
   smsReminderSent: boolean("sms_reminder_sent").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 export const insertAppointmentSchema = createInsertSchema(appointments).omit({
   id: true,
   smsReminderSent: true,
-  createdAt: true
+  createdAt: true,
+  updatedAt: true
 });
 
 // Patient History schema
@@ -83,11 +93,13 @@ export const patientHistory = pgTable("patient_history", {
   prescriptions: text("prescriptions"),
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 export const insertPatientHistorySchema = createInsertSchema(patientHistory).omit({
   id: true,
-  createdAt: true
+  createdAt: true,
+  updatedAt: true
 });
 
 // Settings schema
@@ -99,11 +111,13 @@ export const settings = pgTable("settings", {
   reminderHoursInAdvance: integer("reminder_hours_in_advance").default(24),
   systemName: text("system_name").default("MediTrack"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 export const insertSettingsSchema = createInsertSchema(settings).omit({
   id: true,
-  createdAt: true
+  createdAt: true,
+  updatedAt: true
 });
 
 // Type definitions
