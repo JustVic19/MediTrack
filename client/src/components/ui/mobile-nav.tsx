@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { Menu, X, LayoutDashboard, UserRound, Calendar, History, Settings as SettingsIcon } from "lucide-react";
+import { Menu, X, LayoutDashboard, UserRound, Calendar, History, Activity, Settings as SettingsIcon } from "lucide-react";
 
 export function MobileHeader() {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,6 +32,7 @@ function MobileMenu() {
     { name: 'Patients', href: '/patients', icon: UserRound },
     { name: 'Appointments', href: '/appointments', icon: Calendar },
     { name: 'Patient History', href: '/patient-history', icon: History },
+    { name: 'Health Timeline', href: '/health-timeline/1', icon: Activity },
     { name: 'Settings', href: '/settings', icon: SettingsIcon },
   ];
 
@@ -84,7 +85,7 @@ export function MobileBottomNav() {
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
     { name: 'Patients', href: '/patients', icon: UserRound },
     { name: 'Appointments', href: '/appointments', icon: Calendar },
-    { name: 'History', href: '/patient-history', icon: History },
+    { name: 'Timeline', href: '/health-timeline/1', icon: Activity },
     { name: 'Settings', href: '/settings', icon: SettingsIcon },
   ];
 

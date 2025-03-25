@@ -9,6 +9,7 @@ import Dashboard from "@/pages/dashboard";
 import Patients from "@/pages/patients";
 import PatientDetail from "@/pages/patient-detail";
 import HealthTimeline from "@/pages/health-timeline";
+import HealthTimelines from "@/pages/health-timelines";
 import Appointments from "@/pages/appointments";
 import PatientHistory from "@/pages/patient-history";
 import Settings from "@/pages/settings";
@@ -92,6 +93,15 @@ function AppRoutes() {
         component={() => (
           <MainLayout>
             <HealthTimeline />
+          </MainLayout>
+        )} 
+      />
+
+      <ProtectedRoute 
+        path="/health-timelines" 
+        component={() => (
+          <MainLayout>
+            <HealthTimelines />
           </MainLayout>
         )} 
       />

@@ -380,8 +380,79 @@ export function HealthTimeline({ patientId }: HealthTimelineProps) {
     },
   });
 
+  // Function to generate sample data for demo purposes
+  const getSampleEvents = (): HealthEvent[] => {
+    const today = new Date();
+    return [
+      {
+        id: 1001,
+        date: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 2),
+        title: "Annual Check-up",
+        description: "Routine annual physical examination",
+        type: "appointment",
+        status: "completed",
+        metadata: {
+          doctor: "Dr. Smith",
+          location: "Main Clinic, Room 105"
+        },
+        iconColor: "text-blue-500"
+      },
+      {
+        id: 1002,
+        date: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7),
+        title: "Blood Test Results",
+        description: "Complete blood count and metabolic panel",
+        type: "labs",
+        status: "normal",
+        metadata: {
+          cholesterol: "180 mg/dL",
+          glucose: "95 mg/dL",
+          whiteBloodCells: "7.5 thousand/uL"
+        },
+        iconColor: "text-amber-500"
+      },
+      {
+        id: 1003,
+        date: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 14),
+        title: "Antibiotic Prescription",
+        description: "For respiratory infection",
+        type: "medication",
+        status: "active",
+        metadata: {
+          name: "Amoxicillin",
+          dosage: "500mg",
+          frequency: "3 times daily",
+          startDate: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 14),
+          endDate: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7),
+          prescribedBy: "Dr. Johnson"
+        },
+        iconColor: "text-purple-500"
+      },
+      {
+        id: 1004,
+        date: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 30),
+        title: "Vital Signs Check",
+        description: "Regular vital signs monitoring",
+        type: "vitals",
+        metadata: {
+          bloodPressure: "120/80 mmHg",
+          heartRate: "72 bpm",
+          temperature: "98.6°F",
+          oxygenSaturation: "99%"
+        },
+        iconColor: "text-rose-500"
+      }
+    ];
+  };
+
   // Combine and transform all health events
   const allEvents: HealthEvent[] = React.useMemo(() => {
+    // Get sample data if no real data is available
+    if ((!appointmentsData || appointmentsData.length === 0) && 
+        (!historyData || historyData.length === 0)) {
+      return getSampleEvents();
+    }
+    
     const events: HealthEvent[] = [];
 
     // Add appointments as events

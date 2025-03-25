@@ -7,7 +7,8 @@ import {
   History, 
   Bell, 
   Settings as SettingsIcon,
-  LogOut
+  LogOut,
+  Activity
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -32,6 +33,7 @@ export function Sidebar() {
     { name: 'Patients', href: '/patients', icon: UserRound },
     { name: 'Appointments', href: '/appointments', icon: Calendar },
     { name: 'Patient History', href: '/patient-history', icon: History },
+    { name: 'Health Timeline', href: '/health-timeline/1', icon: Activity },
     { name: 'Notifications', href: '/notifications', icon: Bell },
     { name: 'Settings', href: '/settings', icon: SettingsIcon },
   ];
