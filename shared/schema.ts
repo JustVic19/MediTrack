@@ -195,7 +195,28 @@ export const insertSymptomCheckSchema = createInsertSchema(symptomChecks, {}).om
   updatedAt: true
 });
 
-export type SymptomCheck = typeof symptomChecks.$inferSelect;
+// Define interfaces for the expected structure of analysis and recommendations
+export interface AnalysisResult {
+  urgencyLevel: string;
+  possibleConditions: Array<{
+    name: string;
+    probability: string;
+    description?: string;
+  }>;
+  disclaimer?: string;
+}
+
+export interface RecommendationResult {
+  generalAdvice: string;
+  suggestedActions: string[];
+  followUpRecommendation: string;
+  disclaimer?: string;
+}
+
+export type SymptomCheck = typeof symptomChecks.$inferSelect & {
+  analysis?: AnalysisResult;
+  recommendations?: RecommendationResult;
+};
 export type InsertSymptomCheck = z.infer<typeof insertSymptomCheckSchema>;
 
 // Predefined symptom data

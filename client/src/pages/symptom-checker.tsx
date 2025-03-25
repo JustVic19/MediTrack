@@ -387,14 +387,14 @@ function SymptomAnalysisResults({ check }: { check: SymptomCheck }) {
         <div className="space-y-4">
           <div>
             <h4 className="font-medium mb-2">General Advice</h4>
-            <p>{check.recommendations.generalAdvice}</p>
+            <p>{recommendations.generalAdvice}</p>
           </div>
           
-          {check.recommendations.suggestedActions.length > 0 && (
+          {recommendations.suggestedActions.length > 0 && (
             <div>
               <h4 className="font-medium mb-2">Suggested Actions</h4>
               <ul className="list-disc list-inside space-y-1">
-                {check.recommendations.suggestedActions.map((action, index) => (
+                {recommendations.suggestedActions.map((action: string, index: number) => (
                   <li key={index}>{action}</li>
                 ))}
               </ul>
@@ -403,13 +403,13 @@ function SymptomAnalysisResults({ check }: { check: SymptomCheck }) {
           
           <div>
             <h4 className="font-medium mb-2">Follow-up Recommendation</h4>
-            <p>{check.recommendations.followUpRecommendation}</p>
+            <p>{recommendations.followUpRecommendation}</p>
           </div>
           
-          {check.recommendations.disclaimer && (
+          {recommendations.disclaimer && (
             <div className="mt-4 text-sm text-muted-foreground bg-background p-3 rounded-md border">
               <span className="font-medium">Disclaimer: </span>
-              {check.recommendations.disclaimer}
+              {recommendations.disclaimer}
             </div>
           )}
         </div>
