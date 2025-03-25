@@ -24,13 +24,13 @@ export function PatientTable({ patients, limit }: PatientTableProps) {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'active':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
       case 'inactive':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 dark:bg-gray-800/50 text-gray-800 dark:text-gray-300';
       case 'follow-up':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 dark:bg-gray-800/50 text-gray-800 dark:text-gray-300';
     }
   };
 
@@ -39,24 +39,24 @@ export function PatientTable({ patients, limit }: PatientTableProps) {
   };
 
   return (
-    <div className="bg-white shadow rounded-lg">
-      <div className="px-4 py-5 border-b border-gray-200 sm:px-6">
-        <h3 className="text-lg leading-6 font-medium text-gray-900">
+    <div className="bg-card shadow rounded-lg">
+      <div className="px-4 py-5 border-b border-border sm:px-6">
+        <h3 className="text-lg leading-6 font-medium text-card-foreground">
           {limit ? 'Recent Patients' : 'All Patients'}
         </h3>
       </div>
       <div className="overflow-x-auto">
         <Table>
-          <TableHeader className="bg-gray-50">
+          <TableHeader className="bg-muted/30">
             <TableRow>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Visit</TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</TableHead>
-              <TableHead className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Patient</TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">ID</TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Last Visit</TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</TableHead>
+              <TableHead className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="bg-white divide-y divide-gray-200">
+          <TableBody className="bg-card divide-y divide-border">
             {displayedPatients.map((patient) => (
               <TableRow key={patient.id}>
                 <TableCell className="px-6 py-4 whitespace-nowrap">
@@ -66,16 +66,16 @@ export function PatientTable({ patients, limit }: PatientTableProps) {
                       <AvatarFallback>{getNameInitials(patient.firstName, patient.lastName)}</AvatarFallback>
                     </Avatar>
                     <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">{patient.firstName} {patient.lastName}</div>
-                      <div className="text-sm text-gray-500">{patient.email || 'No email provided'}</div>
+                      <div className="text-sm font-medium text-card-foreground">{patient.firstName} {patient.lastName}</div>
+                      <div className="text-sm text-muted-foreground">{patient.email || 'No email provided'}</div>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{patient.patientId}</div>
+                  <div className="text-sm text-card-foreground">{patient.patientId}</div>
                 </TableCell>
                 <TableCell className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
+                  <div className="text-sm text-card-foreground">
                     {patient.lastVisit ? format(new Date(patient.lastVisit), 'MMM d, yyyy') : 'Never'}
                   </div>
                 </TableCell>
@@ -85,11 +85,11 @@ export function PatientTable({ patients, limit }: PatientTableProps) {
                   </Badge>
                 </TableCell>
                 <TableCell className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <Link href={`/patients/${patient.id}`} className="text-primary hover:text-blue-700">
+                  <Link href={`/patients/${patient.id}`} className="text-primary hover:text-primary/80">
                     View
                   </Link>
-                  <span className="mx-1">|</span>
-                  <Link href={`/patients/${patient.id}/edit`} className="text-gray-600 hover:text-gray-900">
+                  <span className="mx-1 text-muted-foreground">|</span>
+                  <Link href={`/patients/${patient.id}/edit`} className="text-muted-foreground hover:text-card-foreground">
                     Edit
                   </Link>
                 </TableCell>
@@ -97,7 +97,7 @@ export function PatientTable({ patients, limit }: PatientTableProps) {
             ))}
             {displayedPatients.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="py-8 text-center text-gray-500">
+                <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
                   No patients found.
                 </TableCell>
               </TableRow>
@@ -106,8 +106,8 @@ export function PatientTable({ patients, limit }: PatientTableProps) {
         </Table>
       </div>
       {limit && patients.length > limit && (
-        <div className="px-6 py-4 border-t border-gray-200">
-          <Link href="/patients" className="text-primary hover:text-blue-700 font-medium">
+        <div className="px-6 py-4 border-t border-border">
+          <Link href="/patients" className="text-primary hover:text-primary/80 font-medium">
             View all patients →
           </Link>
         </div>
