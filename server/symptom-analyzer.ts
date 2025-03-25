@@ -1,9 +1,11 @@
-import { SymptomCheck } from '../shared/schema';
+import { SymptomCheck, AnalysisResult, RecommendationResult } from '../shared/schema';
 import * as knowledgeBase from './medical-knowledge-base';
 
-interface SymptomData {
-  bodyArea: string;
-  symptoms: string[];
+// Define the interface for the symptom data structure we receive from the frontend
+interface SymptomItem {
+  description: string;
+  location: string;
+  characteristics?: string;
 }
 
 /**
@@ -45,60 +47,85 @@ export function analyzeSymptoms(check: SymptomCheck): SymptomCheck {
     );
     
     // Generate recommendations based on the analysis
-    const recommendations = {
-      medications: analysis.suggestedActions.filter(action => 
-        action.toLowerCase().includes('medication') || 
-        action.toLowerCase().includes('over-the-counter')
-      ),
-      lifestyleChanges: analysis.suggestedActions.filter(action => 
-        action.toLowerCase().includes('rest') || 
-        action.toLowerCase().includes('diet') || 
-        action.toLowerCase().includes('hydrat') ||
-        action.toLowerCase().includes('sleep') ||
-        action.toLowerCase().includes('monitor')
-      ),
-      whenToSeekHelp: analysis.urgencyLevel.description
+    // Pull out medications and lifestyle changes for better organization
+    const medications = analysis.suggestedActions.filter(action => 
+      action.toLowerCase().includes('medication') || 
+      action.toLowerCase().includes('over-the-counter')
+    );
+    
+    const lifestyleChanges = analysis.suggestedActions.filter(action => 
+      action.toLowerCase().includes('rest') || 
+      action.toLowerCase().includes('diet') || 
+      action.toLowerCase().includes('hydrat') ||
+      action.toLowerCase().includes('sleep') ||
+      action.toLowerCase().includes('monitor')
+    );
+    
+    // Create medication advice
+    let medicationAdvice = 'Consult with a healthcare provider before taking any medications';
+    if (medications.length > 0) {
+      medicationAdvice = `Consider: ${medications.join('; ')}`;
+    }
+    
+    // Create lifestyle advice
+    let lifestyleAdvice = 'Ensure adequate rest and stay hydrated';
+    if (lifestyleChanges.length > 0) {
+      lifestyleAdvice = lifestyleChanges.join('; ');
+    }
+    
+    // Create recommendations object that follows the RecommendationResult interface
+    const recommendations: RecommendationResult = {
+      generalAdvice: `Based on your symptoms, you may want to: ${medicationAdvice}. ${lifestyleAdvice}.`,
+      suggestedActions: analysis.suggestedActions,
+      followUpRecommendation: analysis.followUpRecommendation,
+      disclaimer: 'This information is not meant to replace professional medical advice. Please consult with a healthcare provider.'
     };
 
-    // If no specific medications were found, add a generic one
-    if (recommendations.medications.length === 0) {
-      recommendations.medications = ['Consult with a healthcare provider before taking any medications'];
-    }
-
-    // If no specific lifestyle changes were found, add generic ones
-    if (recommendations.lifestyleChanges.length === 0) {
-      recommendations.lifestyleChanges = ['Ensure adequate rest', 'Stay hydrated'];
-    }
+    // Create an analysis object that follows the AnalysisResult interface
+    const formattedAnalysis: AnalysisResult = {
+      urgencyLevel: analysis.urgencyLevel.description.toLowerCase().includes('urgent') ? 'high' :
+                    analysis.urgencyLevel.description.toLowerCase().includes('moderate') ? 'medium' : 'low',
+      possibleConditions: analysis.possibleConditions.map(condition => ({
+        name: condition.name,
+        probability: analysis.urgencyLevel.score > 3 ? 'High' : 'Moderate',
+        description: condition.description
+      })),
+      disclaimer: analysis.disclaimer
+    };
 
     return {
       ...check,
       status: 'analyzed',
-      analysis: analysis,
+      analysis: formattedAnalysis,
       recommendations: recommendations
     };
   } catch (error) {
     console.error('Error in symptom analysis:', error);
     
     // Return a graceful fallback in case of error
+    // Create error fallback objects that follow the expected interfaces
+    const errorAnalysis: AnalysisResult = {
+      urgencyLevel: 'medium',
+      possibleConditions: [],
+      disclaimer: 'This system encountered an error during analysis. Always consult with a qualified healthcare provider for medical advice.'
+    };
+    
+    const errorRecommendations: RecommendationResult = {
+      generalAdvice: 'An error occurred during symptom analysis. For your safety, please consult with a healthcare provider.',
+      suggestedActions: [
+        'Contact your healthcare provider for proper evaluation',
+        'Ensure adequate rest',
+        'Stay hydrated'
+      ],
+      followUpRecommendation: 'Schedule an appointment with your doctor',
+      disclaimer: 'This information is not meant to replace professional medical advice. Please consult with a healthcare provider.'
+    };
+
     return {
       ...check,
       status: 'error',
-      analysis: {
-        possibleConditions: [],
-        urgencyLevel: {
-          score: 3,
-          description: 'Unable to analyze symptoms. Please consult with a healthcare provider.'
-        },
-        generalAdvice: 'An error occurred during symptom analysis. For your safety, please consult with a healthcare provider.',
-        suggestedActions: ['Contact your healthcare provider for proper evaluation'],
-        followUpRecommendation: 'Schedule an appointment with your doctor',
-        disclaimer: 'This system encountered an error during analysis. Always consult with a qualified healthcare provider for medical advice.'
-      },
-      recommendations: {
-        medications: ['Consult with a healthcare provider before taking any medications'],
-        lifestyleChanges: ['Ensure adequate rest', 'Stay hydrated'],
-        whenToSeekHelp: 'Contact your healthcare provider for proper evaluation'
-      }
+      analysis: errorAnalysis,
+      recommendations: errorRecommendations
     };
   }
 }
