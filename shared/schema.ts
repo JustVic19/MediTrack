@@ -171,3 +171,56 @@ export type HealthEvent = {
   metadata?: Record<string, any>;
   iconColor?: string;
 };
+
+// Symptom Checker schemas
+export const symptomChecks = pgTable("symptom_checks", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id").notNull(),
+  checkDate: timestamp("check_date").defaultNow().notNull(),
+  symptoms: json("symptoms").notNull(),
+  severity: integer("severity").notNull(),
+  duration: text("duration").notNull(),
+  analysis: json("analysis"),
+  recommendations: json("recommendations"),
+  status: text("status").default("pending").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertSymptomCheckSchema = createInsertSchema(symptomChecks, {}).omit({
+  id: true,
+  analysis: true,
+  recommendations: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export type SymptomCheck = typeof symptomChecks.$inferSelect;
+export type InsertSymptomCheck = z.infer<typeof insertSymptomCheckSchema>;
+
+// Predefined symptom data
+export const bodyAreas = [
+  "head", "eyes", "ears", "nose", "mouth", "throat", 
+  "chest", "heart", "lungs", "abdomen", "back",
+  "pelvis", "arms", "legs", "skin", "general"
+] as const;
+
+export type BodyArea = typeof bodyAreas[number];
+
+export const severityLevels = [
+  { value: 1, label: "Mild" },
+  { value: 2, label: "Moderate" },
+  { value: 3, label: "Severe" },
+  { value: 4, label: "Very Severe" },
+  { value: 5, label: "Emergency" }
+] as const;
+
+export const durationOptions = [
+  "Less than a day",
+  "1-3 days",
+  "3-7 days",
+  "1-2 weeks",
+  "2-4 weeks",
+  "1-3 months",
+  "3+ months"
+] as const;
