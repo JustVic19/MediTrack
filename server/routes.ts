@@ -1,7 +1,14 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertPatientSchema, insertAppointmentSchema, insertPatientHistorySchema, insertSettingsSchema, insertUserSchema } from "@shared/schema";
+import { 
+  insertPatientSchema, 
+  insertAppointmentSchema, 
+  insertPatientHistorySchema, 
+  insertSettingsSchema, 
+  insertUserSchema,
+  insertSymptomCheckSchema 
+} from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import session from "express-session";

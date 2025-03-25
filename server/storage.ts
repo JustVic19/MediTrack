@@ -3,7 +3,8 @@ import {
   Patient, InsertPatient, patients,
   Appointment, InsertAppointment, appointments, 
   PatientHistory, InsertPatientHistory, patientHistory,
-  Settings, InsertSettings, settings
+  Settings, InsertSettings, settings,
+  SymptomCheck, InsertSymptomCheck, symptomChecks
 } from "@shared/schema";
 import { format } from "date-fns";
 import twilio from "twilio";
@@ -61,6 +62,14 @@ export interface IStorage {
     smsReminders: number;
   }>;
 
+  // Symptom Checker operations
+  getSymptomChecks(patientId: number): Promise<SymptomCheck[]>;
+  getSymptomCheck(id: number): Promise<SymptomCheck | undefined>;
+  createSymptomCheck(check: InsertSymptomCheck): Promise<SymptomCheck>;
+  updateSymptomCheck(id: number, data: Partial<SymptomCheck>): Promise<SymptomCheck | undefined>;
+  deleteSymptomCheck(id: number): Promise<boolean>;
+  analyzeSymptoms(checkId: number): Promise<SymptomCheck | undefined>;
+
   // Session store
   sessionStore: session.Store;
 }
@@ -70,12 +79,14 @@ export class MemStorage implements IStorage {
   private patients: Map<number, Patient>;
   private appointments: Map<number, Appointment>;
   private patientHistories: Map<number, PatientHistory>;
+  private symptomChecks: Map<number, SymptomCheck>;
   private appSettings: Settings | undefined;
   
   private currentUserId: number;
   private currentPatientId: number;
   private currentAppointmentId: number;
   private currentHistoryId: number;
+  private currentSymptomCheckId: number;
   private smsRemindersSent: number;
   
   // Session store for express-session
@@ -90,11 +101,13 @@ export class MemStorage implements IStorage {
     this.patients = new Map();
     this.appointments = new Map();
     this.patientHistories = new Map();
+    this.symptomChecks = new Map();
     
     this.currentUserId = 1;
     this.currentPatientId = 1;
     this.currentAppointmentId = 1;
     this.currentHistoryId = 1;
+    this.currentSymptomCheckId = 1;
     this.smsRemindersSent = 0;
 
     // Add default user
@@ -459,6 +472,102 @@ export class MemStorage implements IStorage {
     }
     
     return this.appSettings;
+  }
+
+  // Symptom Checker methods
+  async getSymptomChecks(patientId: number): Promise<SymptomCheck[]> {
+    return Array.from(this.symptomChecks.values())
+      .filter(check => check.patientId === patientId)
+      .sort((a, b) => new Date(b.checkDate).getTime() - new Date(a.checkDate).getTime());
+  }
+
+  async getSymptomCheck(id: number): Promise<SymptomCheck | undefined> {
+    return this.symptomChecks.get(id);
+  }
+
+  async createSymptomCheck(check: InsertSymptomCheck): Promise<SymptomCheck> {
+    const id = this.currentSymptomCheckId++;
+    const now = new Date();
+    
+    const symptomCheck: SymptomCheck = {
+      ...check,
+      id,
+      analysis: null,
+      recommendations: null,
+      status: 'pending',
+      createdAt: now,
+      updatedAt: now
+    };
+    
+    this.symptomChecks.set(id, symptomCheck);
+    return symptomCheck;
+  }
+
+  async updateSymptomCheck(id: number, data: Partial<SymptomCheck>): Promise<SymptomCheck | undefined> {
+    const existingCheck = this.symptomChecks.get(id);
+    if (!existingCheck) return undefined;
+    
+    const updatedCheck: SymptomCheck = {
+      ...existingCheck,
+      ...data,
+      updatedAt: new Date()
+    };
+    
+    this.symptomChecks.set(id, updatedCheck);
+    return updatedCheck;
+  }
+
+  async deleteSymptomCheck(id: number): Promise<boolean> {
+    return this.symptomChecks.delete(id);
+  }
+
+  async analyzeSymptoms(checkId: number): Promise<SymptomCheck | undefined> {
+    const check = this.symptomChecks.get(checkId);
+    if (!check) return undefined;
+    
+    // This is where we would normally call the AI service
+    // For now, we'll just provide placeholder analysis and recommendations
+    // that would be replaced with actual AI responses once the API key is added
+    
+    // Create a placeholder analysis with information about what would happen
+    // with an actual API integration
+    const placeholderAnalysis = {
+      assessmentStatus: "placeholder",
+      possibleConditions: [
+        {
+          name: "Placeholder condition based on symptoms",
+          probability: "Requires AI analysis with API key",
+          description: "A real AI analysis would provide detailed insights based on the reported symptoms."
+        }
+      ],
+      urgencyLevel: check.severity >= 4 ? "high" : check.severity >= 3 ? "medium" : "low",
+      disclaimer: "This is a placeholder. Once an AI API key is provided, this will be replaced with intelligent analysis."
+    };
+    
+    // Create placeholder recommendations
+    const placeholderRecommendations = {
+      generalAdvice: "This is a placeholder for AI-generated recommendations.",
+      suggestedActions: [
+        "Connect the AI API to receive personalized recommendations based on your symptoms.",
+        "For now, follow general medical guidelines for your symptoms."
+      ],
+      followUpRecommendation: check.severity >= 3 
+        ? "Based on the severity, it's recommended to consult with a healthcare professional."
+        : "Monitor your symptoms and consult a healthcare professional if they worsen.",
+      disclaimer: "These are placeholder recommendations. Actual AI-powered recommendations require an API key."
+    };
+    
+    // Update the check with placeholder data
+    const updatedCheck: SymptomCheck = {
+      ...check,
+      analysis: placeholderAnalysis,
+      recommendations: placeholderRecommendations,
+      status: 'completed',
+      updatedAt: new Date()
+    };
+    
+    this.symptomChecks.set(checkId, updatedCheck);
+    return updatedCheck;
   }
 
   // Dashboard statistics
