@@ -18,11 +18,11 @@ export function analyzeSymptoms(check: SymptomCheck): SymptomCheck {
     console.log("Analyzing symptoms:", JSON.stringify(check, null, 2));
     
     // Parse the symptoms from the JSON data
-    const symptomsData = check.symptoms as SymptomData[];
+    const symptomsData = check.symptoms as SymptomItem[];
     console.log("Symptoms data:", JSON.stringify(symptomsData, null, 2));
     
-    // Extract all symptoms from all body areas
-    const allSymptoms: string[] = symptomsData.flatMap(item => item.symptoms);
+    // Extract all symptom descriptions to be analyzed by the knowledge base
+    const allSymptoms: string[] = symptomsData.map(item => item.description);
     console.log("All symptoms:", allSymptoms);
     
     // Map duration from UI options to knowledge base options
