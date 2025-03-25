@@ -222,9 +222,9 @@ function SymptomForm({ patientId, onSubmit }: { patientId: number, onSubmit: (da
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {severityLevels.map((level, index) => (
-                      <SelectItem key={level} value={(index + 1).toString()}>
-                        {level}
+                    {severityLevels.map((level) => (
+                      <SelectItem key={level.label} value={level.value.toString()}>
+                        {level.label}
                       </SelectItem>
                     ))}
                   </SelectContent>

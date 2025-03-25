@@ -13,11 +13,15 @@ interface SymptomData {
  */
 export function analyzeSymptoms(check: SymptomCheck): SymptomCheck {
   try {
+    console.log("Analyzing symptoms:", JSON.stringify(check, null, 2));
+    
     // Parse the symptoms from the JSON data
     const symptomsData = check.symptoms as SymptomData[];
+    console.log("Symptoms data:", JSON.stringify(symptomsData, null, 2));
     
     // Extract all symptoms from all body areas
     const allSymptoms: string[] = symptomsData.flatMap(item => item.symptoms);
+    console.log("All symptoms:", allSymptoms);
     
     // Map duration from UI options to knowledge base options
     const durationMapping: Record<string, string> = {
@@ -31,6 +35,7 @@ export function analyzeSymptoms(check: SymptomCheck): SymptomCheck {
     };
     
     const mappedDuration = durationMapping[check.duration] || "days";
+    console.log("Mapped duration:", mappedDuration);
     
     // Get analysis from our knowledge base system
     const analysis = knowledgeBase.identifyPossibleConditions(

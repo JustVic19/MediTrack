@@ -233,10 +233,16 @@ export function identifyPossibleConditions(
   severityLevel: number,
   duration: string
 ) {
+  console.log("Identifying conditions for symptoms:", symptomsList);
+  console.log("Severity level:", severityLevel);
+  console.log("Duration:", duration);
+  
   const normalizedSymptoms = symptomsList.map(s => s.toLowerCase().trim());
+  console.log("Normalized symptoms:", normalizedSymptoms);
   
   // Calculate urgency score
   const urgencyScore = calculateUrgencyScore(normalizedSymptoms, severityLevel, duration);
+  console.log("Calculated urgency score:", urgencyScore);
   
   // Identify potential conditions based on reported symptoms
   const potentialConditions: {
