@@ -160,6 +160,9 @@ export type InsertPatientHistory = z.infer<typeof insertPatientHistorySchema>;
 export type Settings = typeof settings.$inferSelect;
 export type InsertSettings = z.infer<typeof insertSettingsSchema>;
 
+export type MedicalDocument = typeof medicalDocuments.$inferSelect;
+export type InsertMedicalDocument = z.infer<typeof insertMedicalDocumentSchema>;
+
 // Health Timeline Types
 export type HealthEvent = {
   id: number;
@@ -245,3 +248,29 @@ export const durationOptions = [
   "1-3 months",
   "3+ months"
 ] as const;
+
+// Medical Document schema
+export const medicalDocuments = pgTable("medical_documents", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id").notNull(),
+  fileName: text("file_name").notNull(),
+  fileType: text("file_type").notNull(),
+  fileSize: integer("file_size").notNull(),
+  contentType: text("content_type").notNull(),
+  fileData: text("file_data").notNull(), // Base64 encoded file data
+  category: text("category").default("general"),
+  description: text("description"),
+  uploadedBy: integer("uploaded_by").notNull(), // User ID
+  uploadDate: timestamp("upload_date").defaultNow().notNull(),
+  lastAccessed: timestamp("last_accessed"),
+  isArchived: boolean("is_archived").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertMedicalDocumentSchema = createInsertSchema(medicalDocuments, {}).omit({
+  id: true,
+  lastAccessed: true,
+  createdAt: true,
+  updatedAt: true
+});

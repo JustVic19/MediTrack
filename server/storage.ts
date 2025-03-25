@@ -4,7 +4,8 @@ import {
   Appointment, InsertAppointment, appointments, 
   PatientHistory, InsertPatientHistory, patientHistory,
   Settings, InsertSettings, settings,
-  SymptomCheck, InsertSymptomCheck, symptomChecks
+  SymptomCheck, InsertSymptomCheck, symptomChecks,
+  MedicalDocument, InsertMedicalDocument, medicalDocuments
 } from "@shared/schema";
 import { format } from "date-fns";
 import twilio from "twilio";
@@ -70,6 +71,13 @@ export interface IStorage {
   deleteSymptomCheck(id: number): Promise<boolean>;
   analyzeSymptoms(checkId: number): Promise<SymptomCheck | undefined>;
 
+  // Medical Document operations
+  getPatientDocuments(patientId: number): Promise<MedicalDocument[]>;
+  getDocument(id: number): Promise<MedicalDocument | undefined>;
+  createDocument(document: InsertMedicalDocument): Promise<MedicalDocument>;
+  updateDocument(id: number, data: Partial<MedicalDocument>): Promise<MedicalDocument | undefined>;
+  deleteDocument(id: number): Promise<boolean>;
+  
   // Session store
   sessionStore: session.Store;
 }
@@ -80,6 +88,7 @@ export class MemStorage implements IStorage {
   private appointments: Map<number, Appointment>;
   private patientHistories: Map<number, PatientHistory>;
   private symptomChecks: Map<number, SymptomCheck>;
+  private medicalDocuments: Map<number, MedicalDocument>;
   private appSettings: Settings | undefined;
   
   private currentUserId: number;
@@ -87,6 +96,7 @@ export class MemStorage implements IStorage {
   private currentAppointmentId: number;
   private currentHistoryId: number;
   private currentSymptomCheckId: number;
+  private currentDocumentId: number;
   private smsRemindersSent: number;
   
   // Session store for express-session
@@ -102,17 +112,20 @@ export class MemStorage implements IStorage {
     this.appointments = new Map();
     this.patientHistories = new Map();
     this.symptomChecks = new Map();
+    this.medicalDocuments = new Map();
     
     this.currentUserId = 1;
     this.currentPatientId = 1;
     this.currentAppointmentId = 1;
     this.currentHistoryId = 1;
     this.currentSymptomCheckId = 1;
+    this.currentDocumentId = 1;
     this.smsRemindersSent = 0;
 
     // Add default user
     // Create user directly to avoid async issues in constructor
     const adminId = this.currentUserId++;
+    const now = new Date();
     const adminUser: User = {
       id: adminId,
       username: "admin",
@@ -125,7 +138,9 @@ export class MemStorage implements IStorage {
       verificationToken: null,
       verificationExpires: null,
       passwordResetToken: null,
-      passwordResetExpires: null
+      passwordResetExpires: null,
+      createdAt: now,
+      updatedAt: now
     };
     this.users.set(adminId, adminUser);
     
@@ -143,7 +158,9 @@ export class MemStorage implements IStorage {
       verificationToken: null,
       verificationExpires: null,
       passwordResetToken: null,
-      passwordResetExpires: null
+      passwordResetExpires: null,
+      createdAt: now,
+      updatedAt: now
     };
     this.users.set(testId, testUser);
     
@@ -553,6 +570,52 @@ export class MemStorage implements IStorage {
       this.symptomChecks.set(checkId, errorCheck);
       return errorCheck;
     }
+  }
+
+  // Medical Document methods
+  async getPatientDocuments(patientId: number): Promise<MedicalDocument[]> {
+    return Array.from(this.medicalDocuments.values())
+      .filter(doc => doc.patientId === patientId)
+      .sort((a, b) => 
+        new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime()
+      );
+  }
+
+  async getDocument(id: number): Promise<MedicalDocument | undefined> {
+    return this.medicalDocuments.get(id);
+  }
+
+  async createDocument(document: InsertMedicalDocument): Promise<MedicalDocument> {
+    const id = this.currentDocumentId++;
+    const now = new Date();
+    
+    const newDocument: MedicalDocument = {
+      ...document,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    
+    this.medicalDocuments.set(id, newDocument);
+    return newDocument;
+  }
+
+  async updateDocument(id: number, data: Partial<MedicalDocument>): Promise<MedicalDocument | undefined> {
+    const existingDocument = this.medicalDocuments.get(id);
+    if (!existingDocument) return undefined;
+    
+    const updatedDocument: MedicalDocument = {
+      ...existingDocument,
+      ...data,
+      updatedAt: new Date()
+    };
+    
+    this.medicalDocuments.set(id, updatedDocument);
+    return updatedDocument;
+  }
+
+  async deleteDocument(id: number): Promise<boolean> {
+    return this.medicalDocuments.delete(id);
   }
 
   // Dashboard statistics
