@@ -25,7 +25,8 @@ import {
   MapPin, 
   Edit,
   FileText, // Using FileText instead of FileMedical
-  MessageSquare
+  MessageSquare,
+  Stethoscope
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -135,12 +136,20 @@ export default function PatientDetail() {
           </Button>
           <h2 className="text-2xl font-bold text-gray-800">Patient Details</h2>
         </div>
-        <Button asChild className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700">
-          <Link href={`/health-timeline/${patientId}`}>
-            <FileText className="h-4 w-4 mr-2" />
-            View Health Timeline
-          </Link>
-        </Button>
+        <div className="flex space-x-2">
+          <Button asChild variant="outline" className="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white border-0">
+            <Link href={`/symptom-checker/${patientId}`}>
+              <Stethoscope className="h-4 w-4 mr-2" />
+              Symptom Checker
+            </Link>
+          </Button>
+          <Button asChild className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700">
+            <Link href={`/health-timeline/${patientId}`}>
+              <FileText className="h-4 w-4 mr-2" />
+              View Health Timeline
+            </Link>
+          </Button>
+        </div>
       </div>
       
       {/* Patient Profile Card */}
