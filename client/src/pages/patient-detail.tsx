@@ -138,7 +138,7 @@ export default function PatientDetail() {
         </div>
         <div className="flex space-x-2">
           <Button asChild variant="outline" className="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white border-0">
-            <Link href={`/symptom-checker/${patientId}`}>
+            <Link href={`/symptom-checker?patientId=${patientId}`}>
               <Stethoscope className="h-4 w-4 mr-2" />
               Symptom Checker
             </Link>
@@ -381,7 +381,7 @@ export default function PatientDetail() {
                 <span>Medical History</span>
                 <div className="flex space-x-2">
                   <Button size="sm" variant="outline" className="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white border-0" asChild>
-                    <Link href={`/symptom-checker/${patientId}`}>
+                    <Link href={`/symptom-checker?patientId=${patientId}`}>
                       <Stethoscope className="h-4 w-4 mr-2" />
                       Symptom Checker
                     </Link>
@@ -408,7 +408,7 @@ export default function PatientDetail() {
                   <p className="text-gray-500 mb-4">This patient doesn't have any recorded medical history yet.</p>
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                     <Button asChild>
-                      <Link href={`/symptom-checker/${patientId}`}>
+                      <Link href={`/symptom-checker?patientId=${patientId}`}>
                         <Stethoscope className="h-4 w-4 mr-2" />
                         Run Symptom Checker
                       </Link>
