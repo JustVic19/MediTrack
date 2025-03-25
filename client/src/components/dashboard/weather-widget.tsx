@@ -120,8 +120,8 @@ export function WeatherWidget({ apiKey, location = "New York", onWeatherLoaded }
 
   if (error) {
     return (
-      <div className="bg-white shadow rounded-lg p-4">
-        <div className="text-center text-red-500">
+      <div className="bg-card shadow rounded-lg p-4">
+        <div className="text-center text-destructive">
           <p>{error}</p>
         </div>
       </div>
@@ -129,9 +129,9 @@ export function WeatherWidget({ apiKey, location = "New York", onWeatherLoaded }
   }
 
   return (
-    <div className="bg-white shadow rounded-lg overflow-hidden">
-      <div className="px-4 py-5 border-b border-gray-200 sm:px-6">
-        <h3 className="text-lg leading-6 font-medium text-gray-900">Local Weather</h3>
+    <div className="bg-card shadow rounded-lg overflow-hidden">
+      <div className="px-4 py-5 border-b border-border sm:px-6">
+        <h3 className="text-lg leading-6 font-medium text-card-foreground">Local Weather</h3>
       </div>
       
       {isLoading ? (
@@ -142,43 +142,43 @@ export function WeatherWidget({ apiKey, location = "New York", onWeatherLoaded }
         <div>
           <div className="p-4 flex items-center justify-between">
             <div>
-              <div className="text-2xl font-bold">{weather.location}</div>
-              <div className="text-xl mt-1">{weather.temperature}°F</div>
-              <div className="text-sm text-gray-500 capitalize">{weather.condition}</div>
+              <div className="text-2xl font-bold text-card-foreground">{weather.location}</div>
+              <div className="text-xl mt-1 text-card-foreground">{weather.temperature}°F</div>
+              <div className="text-sm text-muted-foreground capitalize">{weather.condition}</div>
             </div>
             <div className="flex flex-col items-center">
               {getWeatherIcon(weather.condition)}
             </div>
           </div>
           
-          <div className="px-4 py-3 bg-gray-50 flex justify-between items-center text-sm">
+          <div className="px-4 py-3 bg-muted/30 flex justify-between items-center text-sm">
             <div className="flex items-center">
               <Droplets className="h-4 w-4 text-blue-500 mr-1" />
-              <span>Humidity: {weather.humidity}%</span>
+              <span className="text-card-foreground">Humidity: {weather.humidity}%</span>
             </div>
             <div className="flex items-center">
-              <Wind className="h-4 w-4 text-gray-500 mr-1" />
-              <span>Wind: {weather.windSpeed} mph</span>
+              <Wind className="h-4 w-4 text-muted-foreground mr-1" />
+              <span className="text-card-foreground">Wind: {weather.windSpeed} mph</span>
             </div>
           </div>
           
-          <div className="px-4 py-3 border-t border-gray-200">
-            <div className="text-sm font-medium mb-2">5-Day Forecast</div>
+          <div className="px-4 py-3 border-t border-border">
+            <div className="text-sm font-medium mb-2 text-card-foreground">5-Day Forecast</div>
             <div className="flex justify-between">
               {weather.forecast.map((day, index) => (
                 <div key={index} className="flex flex-col items-center">
-                  <div className="text-xs font-medium">{day.day}</div>
+                  <div className="text-xs font-medium text-card-foreground">{day.day}</div>
                   <div className="my-1">
                     {getSmallWeatherIcon(day.condition)}
                   </div>
-                  <div className="text-xs">{day.temperature}°</div>
+                  <div className="text-xs text-card-foreground">{day.temperature}°</div>
                 </div>
               ))}
             </div>
           </div>
         </div>
       ) : (
-        <div className="p-4 text-center text-gray-500">
+        <div className="p-4 text-center text-muted-foreground">
           <p>Unable to load weather data</p>
         </div>
       )}

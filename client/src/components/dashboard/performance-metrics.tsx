@@ -42,9 +42,9 @@ export function PerformanceMetrics({ data }: PerformanceMetricsProps) {
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'quarter' | 'year'>('month');
 
   return (
-    <div className="bg-white shadow rounded-lg">
-      <div className="px-4 py-5 border-b border-gray-200 sm:px-6 flex justify-between items-center">
-        <h3 className="text-lg leading-6 font-medium text-gray-900">Performance Metrics</h3>
+    <div className="bg-card shadow rounded-lg">
+      <div className="px-4 py-5 border-b border-border sm:px-6 flex justify-between items-center">
+        <h3 className="text-lg leading-6 font-medium text-foreground">Performance Metrics</h3>
         <div className="flex space-x-2">
           <Button 
             variant="outline" 
@@ -91,17 +91,23 @@ export function PerformanceMetrics({ data }: PerformanceMetricsProps) {
           
           <TabsContent value="patients" className="mt-0">
             <div className="p-2 h-80">
-              <h4 className="text-sm font-medium mb-2 text-gray-700">Patient Growth Over Time</h4>
+              <h4 className="text-sm font-medium mb-2 text-card-foreground">Patient Growth Over Time</h4>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                   data={data.patientGrowth}
                   margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                  <XAxis dataKey="month" tick={{ fill: 'currentColor' }} />
+                  <YAxis tick={{ fill: 'currentColor' }} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'var(--card)', 
+                      borderColor: 'var(--border)',
+                      color: 'var(--card-foreground)'
+                    }} 
+                  />
+                  <Legend wrapperStyle={{ color: 'var(--card-foreground)' }} />
                   <Line 
                     type="monotone" 
                     dataKey="patients" 
@@ -111,7 +117,7 @@ export function PerformanceMetrics({ data }: PerformanceMetricsProps) {
                   />
                 </LineChart>
               </ResponsiveContainer>
-              <p className="text-xs text-gray-500 text-center mt-2">
+              <p className="text-xs text-muted-foreground text-center mt-2">
                 Showing patient growth over {timeRange}
               </p>
             </div>
@@ -119,21 +125,27 @@ export function PerformanceMetrics({ data }: PerformanceMetricsProps) {
           
           <TabsContent value="visits" className="mt-0">
             <div className="p-2 h-80">
-              <h4 className="text-sm font-medium mb-2 text-gray-700">Patient Visits by Day</h4>
+              <h4 className="text-sm font-medium mb-2 text-card-foreground">Patient Visits by Day</h4>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={data.patientVisits}
                   margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                  <XAxis dataKey="name" tick={{ fill: 'currentColor' }} />
+                  <YAxis tick={{ fill: 'currentColor' }} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'var(--card)',
+                      borderColor: 'var(--border)',
+                      color: 'var(--card-foreground)'
+                    }}
+                  />
+                  <Legend wrapperStyle={{ color: 'var(--card-foreground)' }} />
                   <Bar dataKey="count" name="Visits" fill="#82ca9d" />
                 </BarChart>
               </ResponsiveContainer>
-              <p className="text-xs text-gray-500 text-center mt-2">
+              <p className="text-xs text-muted-foreground text-center mt-2">
                 Number of patient visits per day
               </p>
             </div>
@@ -141,7 +153,7 @@ export function PerformanceMetrics({ data }: PerformanceMetricsProps) {
           
           <TabsContent value="appointments" className="mt-0">
             <div className="p-2 h-80 flex flex-col items-center">
-              <h4 className="text-sm font-medium mb-2 text-gray-700">Appointment Types Distribution</h4>
+              <h4 className="text-sm font-medium mb-2 text-card-foreground">Appointment Types Distribution</h4>
               <div className="w-full h-full flex flex-col md:flex-row items-center">
                 <div className="w-full md:w-1/2 h-full">
                   <ResponsiveContainer width="100%" height="100%">
@@ -160,7 +172,13 @@ export function PerformanceMetrics({ data }: PerformanceMetricsProps) {
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'var(--card)',
+                          borderColor: 'var(--border)',
+                          color: 'var(--card-foreground)'
+                        }}
+                      />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -171,12 +189,12 @@ export function PerformanceMetrics({ data }: PerformanceMetricsProps) {
                         className="w-3 h-3 mr-1 rounded-sm" 
                         style={{ backgroundColor: COLORS[index % COLORS.length] }}
                       />
-                      <span className="text-xs">{entry.name}</span>
+                      <span className="text-xs text-card-foreground">{entry.name}</span>
                     </div>
                   ))}
                 </div>
               </div>
-              <p className="text-xs text-gray-500 text-center mt-2">
+              <p className="text-xs text-muted-foreground text-center mt-2">
                 Distribution of appointment types for the {timeRange}
               </p>
             </div>
