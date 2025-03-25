@@ -360,7 +360,15 @@ export default function PatientDetail() {
         <TabsContent value="history">
           <Card>
             <CardHeader>
-              <CardTitle>Medical History</CardTitle>
+              <CardTitle className="flex justify-between items-center">
+                <span>Medical History</span>
+                <Button size="sm" variant="outline" asChild>
+                  <Link href={`/health-timeline/${patientId}`}>
+                    <FileText className="h-4 w-4 mr-2" />
+                    View Health Timeline
+                  </Link>
+                </Button>
+              </CardTitle>
               <CardDescription>
                 Complete medical history for this patient
               </CardDescription>
