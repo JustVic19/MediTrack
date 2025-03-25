@@ -379,12 +379,20 @@ export default function PatientDetail() {
             <CardHeader>
               <CardTitle className="flex justify-between items-center">
                 <span>Medical History</span>
-                <Button size="sm" variant="default" asChild>
-                  <Link href={`/health-timeline/${patientId}`}>
-                    <FileText className="h-4 w-4 mr-2" />
-                    View Health Timeline
-                  </Link>
-                </Button>
+                <div className="flex space-x-2">
+                  <Button size="sm" variant="outline" className="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white border-0" asChild>
+                    <Link href={`/symptom-checker/${patientId}`}>
+                      <Stethoscope className="h-4 w-4 mr-2" />
+                      Symptom Checker
+                    </Link>
+                  </Button>
+                  <Button size="sm" variant="default" asChild>
+                    <Link href={`/health-timeline/${patientId}`}>
+                      <FileText className="h-4 w-4 mr-2" />
+                      View Health Timeline
+                    </Link>
+                  </Button>
+                </div>
               </CardTitle>
               <CardDescription>
                 Complete medical history for this patient
@@ -397,7 +405,21 @@ export default function PatientDetail() {
                 <div className="text-center py-10">
                   <FileText className="h-12 w-12 mx-auto text-gray-400 mb-4" />
                   <h3 className="text-lg font-medium mb-2">No medical history found</h3>
-                  <p className="text-gray-500">This patient doesn't have any recorded medical history yet.</p>
+                  <p className="text-gray-500 mb-4">This patient doesn't have any recorded medical history yet.</p>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <Button asChild>
+                      <Link href={`/symptom-checker/${patientId}`}>
+                        <Stethoscope className="h-4 w-4 mr-2" />
+                        Run Symptom Checker
+                      </Link>
+                    </Button>
+                    <Button variant="outline" asChild>
+                      <Link href={`/health-timeline/${patientId}`}>
+                        <FileText className="h-4 w-4 mr-2" />
+                        View Health Timeline
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-6">
