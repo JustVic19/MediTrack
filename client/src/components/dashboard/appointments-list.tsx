@@ -115,10 +115,10 @@ export function AppointmentsList({ appointments, date = new Date() }: Appointmen
                   <Button 
                     size="sm" 
                     variant="outline"
-                    isLoading={isLoading[appointment.id]}
+                    disabled={isLoading[appointment.id]}
                     onClick={() => handleSendReminder(appointment.id)}
                   >
-                    Send Reminder
+                    {isLoading[appointment.id] ? 'Sending...' : 'Send Reminder'}
                   </Button>
                 )}
                 {appointment.status !== 'cancelled' && (

@@ -37,9 +37,9 @@ export function CalendarView({ appointments, onDateSelect }: CalendarViewProps) 
   };
 
   return (
-    <div className="bg-white shadow rounded-lg">
-      <div className="px-4 py-5 border-b border-gray-200 sm:px-6 flex justify-between items-center">
-        <h3 className="text-lg leading-6 font-medium text-gray-900">Appointment Calendar</h3>
+    <div className="bg-card shadow rounded-lg">
+      <div className="px-4 py-5 border-b border-border sm:px-6 flex justify-between items-center">
+        <h3 className="text-lg leading-6 font-medium text-card-foreground">Appointment Calendar</h3>
         <div className="flex items-center space-x-2">
           <Button 
             variant="outline" 
@@ -80,13 +80,13 @@ export function CalendarView({ appointments, onDateSelect }: CalendarViewProps) 
             }}
             modifiersClassNames={{
               appointment: "bg-primary/20 font-medium",
-              past: "text-gray-400 line-through"
+              past: "text-muted-foreground/70 line-through"
             }}
             footer={
               <div className="mt-3 text-sm text-center space-y-1">
                 <div className="flex items-center justify-center">
                   <div className="w-3 h-3 rounded-full bg-primary/20 mr-2"></div>
-                  <span>Has appointments</span>
+                  <span className="text-muted-foreground">Has appointments</span>
                 </div>
               </div>
             }
@@ -103,7 +103,7 @@ export function CalendarView({ appointments, onDateSelect }: CalendarViewProps) 
               <ChevronLeft className="h-4 w-4 mr-1" />
               Previous Week
             </Button>
-            <div className="text-sm font-medium">
+            <div className="text-sm font-medium text-card-foreground">
               {format(weekDays[0], "MMMM d")} - {format(weekDays[6], "MMMM d, yyyy")}
             </div>
             <Button 
@@ -127,10 +127,10 @@ export function CalendarView({ appointments, onDateSelect }: CalendarViewProps) 
                   key={dayKey}
                   className={`
                     p-2 text-center border rounded-md cursor-pointer transition-colors
-                    ${isToday(day) ? 'border-primary' : 'border-gray-200'} 
+                    ${isToday(day) ? 'border-primary' : 'border-border'} 
                     ${isEqual(startOfDay(day), startOfDay(date)) ? 'bg-primary/10' : ''} 
-                    ${isPastDay ? 'text-gray-400' : ''}
-                    hover:bg-gray-50
+                    ${isPastDay ? 'text-muted-foreground dark:text-muted-foreground/70' : 'text-card-foreground'}
+                    hover:bg-muted/10
                   `}
                   onClick={() => handleDateChange(day)}
                 >
@@ -149,31 +149,31 @@ export function CalendarView({ appointments, onDateSelect }: CalendarViewProps) 
           </div>
           
           {/* Show appointments for selected date */}
-          <div className="mt-4 border-t pt-3">
+          <div className="mt-4 border-t border-border pt-3">
             <div className="flex items-center">
               <CalendarDays className="h-5 w-5 text-primary mr-2" />
-              <h4 className="text-sm font-medium">{format(date, "MMMM d, yyyy")} Appointments</h4>
+              <h4 className="text-sm font-medium text-card-foreground">{format(date, "MMMM d, yyyy")} Appointments</h4>
             </div>
             <div className="mt-2 space-y-2">
               {appointmentDates[format(date, "yyyy-MM-dd")]?.map((appointment) => (
                 <div 
                   key={appointment.id}
-                  className="p-2 border border-gray-200 rounded-md text-sm hover:bg-gray-50"
+                  className="p-2 border border-border rounded-md text-sm hover:bg-muted/10"
                 >
                   <div className="flex justify-between items-center">
-                    <div className="font-medium">{format(new Date(appointment.appointmentDate), "h:mm a")}</div>
+                    <div className="font-medium text-card-foreground">{format(new Date(appointment.appointmentDate), "h:mm a")}</div>
                     <Badge variant="outline" className={
-                      appointment.status.toLowerCase() === 'confirmed' ? 'bg-green-100 text-green-800' :
-                      appointment.status.toLowerCase() === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                      appointment.status.toLowerCase() === 'cancelled' ? 'bg-red-100 text-red-800' : 
-                      'bg-gray-100 text-gray-800'
+                      appointment.status.toLowerCase() === 'confirmed' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' :
+                      appointment.status.toLowerCase() === 'pending' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300' :
+                      appointment.status.toLowerCase() === 'cancelled' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300' : 
+                      'bg-gray-100 dark:bg-gray-800/50 text-gray-800 dark:text-gray-300'
                     }>{appointment.status}</Badge>
                   </div>
-                  <div className="mt-1">{appointment.reason}</div>
+                  <div className="mt-1 text-muted-foreground">{appointment.reason}</div>
                 </div>
               ))}
               {!appointmentDates[format(date, "yyyy-MM-dd")] && (
-                <div className="text-center py-4 text-gray-500">
+                <div className="text-center py-4 text-muted-foreground">
                   No appointments scheduled for this date.
                 </div>
               )}
