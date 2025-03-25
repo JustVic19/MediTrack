@@ -11,7 +11,7 @@ import {
   Stethoscope
 } from "lucide-react";
 import { format } from "date-fns";
-import { PatientHistory, Appointment } from "@shared/schema";
+import { PatientHistory, Appointment, HealthEvent } from "@shared/schema";
 import { Timeline, TimelineItem } from "@/components/ui/timeline";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,18 +19,6 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiRequest } from "@/lib/queryClient";
 import { cn } from "@/lib/utils";
-
-// Type to represent all types of health events
-type HealthEvent = {
-  id: number;
-  date: Date;
-  title: string;
-  description?: string;
-  type: 'appointment' | 'history' | 'medication' | 'vitals' | 'labs' | 'document';
-  status?: string;
-  metadata?: Record<string, any>;
-  iconColor?: string;
-};
 
 // Get icon component based on event type
 function getEventIcon(type: HealthEvent['type']) {

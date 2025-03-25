@@ -8,6 +8,7 @@ import { ProtectedRoute } from "@/lib/protected-route";
 import Dashboard from "@/pages/dashboard";
 import Patients from "@/pages/patients";
 import PatientDetail from "@/pages/patient-detail";
+import HealthTimeline from "@/pages/health-timeline";
 import Appointments from "@/pages/appointments";
 import PatientHistory from "@/pages/patient-history";
 import Settings from "@/pages/settings";
@@ -82,6 +83,15 @@ function AppRoutes() {
         component={() => (
           <MainLayout>
             <ProfilePage />
+          </MainLayout>
+        )} 
+      />
+      
+      <ProtectedRoute 
+        path="/health-timeline/:id" 
+        component={() => (
+          <MainLayout>
+            <HealthTimeline />
           </MainLayout>
         )} 
       />

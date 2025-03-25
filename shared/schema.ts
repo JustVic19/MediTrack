@@ -127,11 +127,59 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type Patient = typeof patients.$inferSelect;
 export type InsertPatient = z.infer<typeof insertPatientSchema>;
 
-export type Appointment = typeof appointments.$inferSelect;
+export type Appointment = typeof appointments.$inferSelect & {
+  type?: 'appointment';
+  doctorName?: string;
+  location?: string;
+};
 export type InsertAppointment = z.infer<typeof insertAppointmentSchema>;
 
-export type PatientHistory = typeof patientHistory.$inferSelect;
+export type PatientHistory = typeof patientHistory.$inferSelect & {
+  type?: 'history' | 'vitals' | 'medication' | 'labs' | 'document';
+  visitReason?: string;
+  recordedBy?: string;
+  vitals?: {
+    bloodPressure?: string;
+    heartRate?: number;
+    temperature?: number;
+    oxygenSaturation?: number;
+    respiratoryRate?: number;
+    weight?: number;
+    height?: number;
+  };
+  medications?: {
+    name?: string;
+    dosage?: string;
+    frequency?: string;
+    startDate?: Date;
+    endDate?: Date;
+  }[];
+  labResults?: {
+    name?: string;
+    result?: string;
+    normalRange?: string;
+    date?: Date;
+  }[];
+  documents?: {
+    name?: string;
+    type?: string;
+    size?: number;
+    uploadDate?: Date;
+  }[];
+};
 export type InsertPatientHistory = z.infer<typeof insertPatientHistorySchema>;
 
 export type Settings = typeof settings.$inferSelect;
 export type InsertSettings = z.infer<typeof insertSettingsSchema>;
+
+// Health Timeline Types
+export type HealthEvent = {
+  id: number;
+  date: Date;
+  title: string;
+  description?: string;
+  type: 'appointment' | 'history' | 'medication' | 'vitals' | 'labs' | 'document';
+  status?: string;
+  metadata?: Record<string, any>;
+  iconColor?: string;
+};
