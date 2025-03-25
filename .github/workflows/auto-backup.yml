@@ -1,0 +1,50 @@
+name: MediTrack Auto Backup
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Run every 6 hours
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    
+    - name: Configure Git
+      run: |
+        git config --global user.name 'GitHub Action'
+        git config --global user.email 'action@github.com'
+    
+    - name: Check for changes in remote repository
+      run: |
+        git remote update
+        
+        # Check if there are any changes to pull
+        if [ $(git rev-parse HEAD) != $(git rev-parse @{u}) ]; then
+          echo "Changes detected in remote repository. Pulling updates..."
+          git pull
+        else
+          echo "No changes in remote repository."
+        fi
+    
+    - name: Create backup timestamp
+      run: |
+        echo "Backup created: $(date)" > backup-timestamp.txt
+        
+    - name: Commit and push if there are changes
+      run: |
+        git add .
+        
+        # Only attempt to commit and push if there are changes
+        if [ -n "$(git status --porcelain)" ]; then
+          git commit -m "Auto backup: $(date)"
+          git push
+          echo "Backup completed successfully!"
+        else
+          echo "No changes to commit."
+        fi
