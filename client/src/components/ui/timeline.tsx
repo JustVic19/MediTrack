@@ -103,10 +103,12 @@ export function Timeline({ children, className }: TimelineProps) {
   // Clone children and add isFirst and isLast props
   const enhancedChildren = React.Children.map(children, (child, index) => {
     if (React.isValidElement(child)) {
-      return React.cloneElement(child, {
+      // Only add props safely
+      const props: any = {
         isFirst: index === 0,
         isLast: index === childCount - 1,
-      });
+      };
+      return React.cloneElement(child, props);
     }
     return child;
   });

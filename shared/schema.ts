@@ -20,19 +20,7 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const insertUserSchema = createInsertSchema(users, {
-  username: true,
-  password: true,
-  fullName: true,
-  email: true,
-  role: true,
-  profileImage: true,
-  isVerified: true,
-  verificationToken: true,
-  verificationExpires: true,
-  passwordResetToken: true,
-  passwordResetExpires: true,
-}).omit({
+export const insertUserSchema = createInsertSchema(users, {}).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -57,7 +45,7 @@ export const patients = pgTable("patients", {
   lastVisit: timestamp("last_visit"),
 });
 
-export const insertPatientSchema = createInsertSchema(patients).omit({
+export const insertPatientSchema = createInsertSchema(patients, {}).omit({
   id: true,
   createdAt: true,
   updatedAt: true
@@ -76,7 +64,7 @@ export const appointments = pgTable("appointments", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const insertAppointmentSchema = createInsertSchema(appointments).omit({
+export const insertAppointmentSchema = createInsertSchema(appointments, {}).omit({
   id: true,
   smsReminderSent: true,
   createdAt: true,
@@ -96,7 +84,7 @@ export const patientHistory = pgTable("patient_history", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const insertPatientHistorySchema = createInsertSchema(patientHistory).omit({
+export const insertPatientHistorySchema = createInsertSchema(patientHistory, {}).omit({
   id: true,
   createdAt: true,
   updatedAt: true
@@ -114,7 +102,7 @@ export const settings = pgTable("settings", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const insertSettingsSchema = createInsertSchema(settings).omit({
+export const insertSettingsSchema = createInsertSchema(settings, {}).omit({
   id: true,
   createdAt: true,
   updatedAt: true
