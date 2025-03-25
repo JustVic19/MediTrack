@@ -3,9 +3,10 @@ import { db } from './db';
 import { 
   User, InsertUser, Patient, InsertPatient, 
   Appointment, InsertAppointment, PatientHistory, 
-  InsertPatientHistory, Settings, InsertSettings 
+  InsertPatientHistory, Settings, InsertSettings,
+  SymptomCheck, InsertSymptomCheck
 } from '@shared/schema';
-import { users, patients, appointments, patientHistory, settings } from '@shared/schema';
+import { users, patients, appointments, patientHistory, settings, symptomChecks } from '@shared/schema';
 import { eq, and, gte, lte, like, desc, sql } from 'drizzle-orm';
 import session from "express-session";
 import { format, startOfDay, endOfDay, addDays } from 'date-fns';
@@ -289,6 +290,88 @@ export class DatabaseStorage implements IStorage {
       }).returning();
       
       return result[0];
+    }
+  }
+  
+  // Symptom Checker operations
+  async getSymptomChecks(patientId: number): Promise<SymptomCheck[]> {
+    return db.select()
+      .from(symptomChecks)
+      .where(eq(symptomChecks.patientId, patientId))
+      .orderBy(desc(symptomChecks.checkDate));
+  }
+
+  async getSymptomCheck(id: number): Promise<SymptomCheck | undefined> {
+    const result = await db.select().from(symptomChecks).where(eq(symptomChecks.id, id));
+    return result.length > 0 ? result[0] : undefined;
+  }
+
+  async createSymptomCheck(check: InsertSymptomCheck): Promise<SymptomCheck> {
+    const result = await db.insert(symptomChecks).values({
+      ...check,
+      checkDate: check.checkDate || new Date(),
+      status: check.status || 'pending',
+      analysis: null,
+      recommendations: null
+    }).returning();
+    
+    return result[0];
+  }
+
+  async updateSymptomCheck(id: number, data: Partial<SymptomCheck>): Promise<SymptomCheck | undefined> {
+    const result = await db.update(symptomChecks)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(symptomChecks.id, id))
+      .returning();
+    
+    return result.length > 0 ? result[0] : undefined;
+  }
+
+  async deleteSymptomCheck(id: number): Promise<boolean> {
+    const result = await db.delete(symptomChecks).where(eq(symptomChecks.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async analyzeSymptoms(checkId: number): Promise<SymptomCheck | undefined> {
+    try {
+      // Get the symptom check from the database
+      const check = await this.getSymptomCheck(checkId);
+      if (!check) return undefined;
+      
+      // Import the symptom analyzer
+      const { analyzeSymptoms } = await import('./symptom-analyzer');
+      
+      // Use the knowledge-based symptom analyzer to analyze the symptoms
+      const analyzedCheck = analyzeSymptoms(check);
+      
+      // Update the symptom check with the analysis results
+      const result = await db.update(symptomChecks)
+        .set({
+          status: analyzedCheck.status,
+          analysis: analyzedCheck.analysis,
+          recommendations: analyzedCheck.recommendations,
+          updatedAt: new Date()
+        })
+        .where(eq(symptomChecks.id, checkId))
+        .returning();
+      
+      return result.length > 0 ? result[0] : undefined;
+    } catch (error) {
+      console.error('Error analyzing symptoms:', error);
+      
+      // If there's an error in the symptom analyzer, update the check with an error status
+      const result = await db.update(symptomChecks)
+        .set({
+          status: 'error',
+          updatedAt: new Date()
+        })
+        .where(eq(symptomChecks.id, checkId))
+        .returning();
+      
+      return result.length > 0 ? result[0] : undefined;
     }
   }
   
