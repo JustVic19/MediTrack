@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useParams, useLocation } from 'wouter';
+import { useLocation } from 'wouter';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -495,8 +495,11 @@ function SymptomCheckHistory({ patientId }: { patientId: number }) {
 
 function SymptomCheckerDetailPage() {
   const [_, setLocation] = useLocation();
-  const params = useParams<{ id: string }>();
-  const checkId = parseInt(params.id);
+  
+  // Parse query parameters
+  const searchParams = new URLSearchParams(window.location.search);
+  const idParam = searchParams.get('id');
+  const checkId = idParam ? parseInt(idParam) : 0;
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -713,14 +716,18 @@ export default function SymptomChecker() {
   const [location, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const params = useParams<{ id?: string, patientId?: string }>();
+  
+  // Parse query parameters
+  const searchParams = new URLSearchParams(window.location.search);
+  const patientIdParam = searchParams.get('patientId');
   
   // If viewing details for a specific symptom check
-  if (params.id) {
+  const idParam = searchParams.get('id');
+  if (idParam) {
     return <SymptomCheckerDetailPage />;
   }
   
-  const patientId = params.patientId ? parseInt(params.patientId) : undefined;
+  const patientId = patientIdParam ? parseInt(patientIdParam) : undefined;
   
   // Fetch patient details if we have a patientId
   const { data: patient } = useQuery({
@@ -756,7 +763,7 @@ export default function SymptomChecker() {
         description: 'Your symptoms have been successfully recorded.',
       });
       // Navigate to the symptom check details page
-      setLocation(`/symptom-checker/${data.id}`);
+      setLocation(`/symptom-checker?id=${data.id}`);
     },
     onError: (error: Error) => {
       toast({
