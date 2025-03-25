@@ -1,4 +1,4 @@
-import { SymptomCheck } from '@shared/schema';
+import { SymptomCheck } from '../shared/schema';
 import * as knowledgeBase from './medical-knowledge-base';
 
 interface SymptomData {

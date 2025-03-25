@@ -525,49 +525,34 @@ export class MemStorage implements IStorage {
     const check = this.symptomChecks.get(checkId);
     if (!check) return undefined;
     
-    // This is where we would normally call the AI service
-    // For now, we'll just provide placeholder analysis and recommendations
-    // that would be replaced with actual AI responses once the API key is added
-    
-    // Create a placeholder analysis with information about what would happen
-    // with an actual API integration
-    const placeholderAnalysis = {
-      assessmentStatus: "placeholder",
-      possibleConditions: [
-        {
-          name: "Placeholder condition based on symptoms",
-          probability: "Requires AI analysis with API key",
-          description: "A real AI analysis would provide detailed insights based on the reported symptoms."
-        }
-      ],
-      urgencyLevel: check.severity >= 4 ? "high" : check.severity >= 3 ? "medium" : "low",
-      disclaimer: "This is a placeholder. Once an AI API key is provided, this will be replaced with intelligent analysis."
-    };
-    
-    // Create placeholder recommendations
-    const placeholderRecommendations = {
-      generalAdvice: "This is a placeholder for AI-generated recommendations.",
-      suggestedActions: [
-        "Connect the AI API to receive personalized recommendations based on your symptoms.",
-        "For now, follow general medical guidelines for your symptoms."
-      ],
-      followUpRecommendation: check.severity >= 3 
-        ? "Based on the severity, it's recommended to consult with a healthcare professional."
-        : "Monitor your symptoms and consult a healthcare professional if they worsen.",
-      disclaimer: "These are placeholder recommendations. Actual AI-powered recommendations require an API key."
-    };
-    
-    // Update the check with placeholder data
-    const updatedCheck: SymptomCheck = {
-      ...check,
-      analysis: placeholderAnalysis,
-      recommendations: placeholderRecommendations,
-      status: 'completed',
-      updatedAt: new Date()
-    };
-    
-    this.symptomChecks.set(checkId, updatedCheck);
-    return updatedCheck;
+    try {
+      // Import the symptom analyzer
+      const { analyzeSymptoms } = await import('./symptom-analyzer');
+      
+      // Use the knowledge-based symptom analyzer to analyze the symptoms
+      const analyzedCheck = analyzeSymptoms(check);
+      
+      // Update the symptom check with the analysis results
+      const updatedCheck: SymptomCheck = {
+        ...analyzedCheck,
+        updatedAt: new Date()
+      };
+      
+      this.symptomChecks.set(checkId, updatedCheck);
+      return updatedCheck;
+    } catch (error) {
+      console.error('Error analyzing symptoms:', error);
+      
+      // If there's an error in the symptom analyzer, return the original check with an error status
+      const errorCheck: SymptomCheck = {
+        ...check,
+        status: 'error',
+        updatedAt: new Date()
+      };
+      
+      this.symptomChecks.set(checkId, errorCheck);
+      return errorCheck;
+    }
   }
 
   // Dashboard statistics
