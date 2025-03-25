@@ -167,14 +167,16 @@ export class MemStorage implements IStorage {
     console.log("Created default users:", this.users.size);
 
     // Initialize app settings
+    const settingsTime = new Date();
     this.appSettings = {
       id: 1,
-      twilioAccountSid: process.env.TWILIO_ACCOUNT_SID || "",
-      twilioAuthToken: process.env.TWILIO_AUTH_TOKEN || "",
-      twilioPhoneNumber: process.env.TWILIO_PHONE_NUMBER || "",
+      twilioAccountSid: process.env.TWILIO_ACCOUNT_SID || null,
+      twilioAuthToken: process.env.TWILIO_AUTH_TOKEN || null,
+      twilioPhoneNumber: process.env.TWILIO_PHONE_NUMBER || null,
       reminderHoursInAdvance: 24,
       systemName: "MediTrack",
-      createdAt: new Date()
+      createdAt: settingsTime,
+      updatedAt: settingsTime
     };
     
     // Create sample data
@@ -216,6 +218,7 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
+    const userCreationTime = new Date();
     const user: User = { 
       ...insertUser, 
       id, 
@@ -225,7 +228,9 @@ export class MemStorage implements IStorage {
       verificationToken: insertUser.verificationToken || null,
       verificationExpires: insertUser.verificationExpires || null,
       passwordResetToken: null,
-      passwordResetExpires: null
+      passwordResetExpires: null,
+      createdAt: userCreationTime,
+      updatedAt: userCreationTime
     };
     this.users.set(id, user);
     return user;
@@ -272,12 +277,14 @@ export class MemStorage implements IStorage {
     // Generate a patient ID like PT-2023-0001
     const patientId = insertPatient.patientId || `PT-${new Date().getFullYear()}-${id.toString().padStart(4, '0')}`;
     
+    const patientCreationTime = new Date();
     const patient: Patient = { 
       ...insertPatient,
       id,
       patientId,
-      createdAt: new Date(),
-      lastVisit: insertPatient.lastVisit || new Date()
+      createdAt: patientCreationTime,
+      updatedAt: patientCreationTime,
+      lastVisit: insertPatient.lastVisit || patientCreationTime
     };
     
     this.patients.set(id, patient);
@@ -333,10 +340,10 @@ export class MemStorage implements IStorage {
   }
 
   async getUpcomingAppointments(): Promise<Appointment[]> {
-    const now = new Date();
+    const currentTime = new Date();
     
     return Array.from(this.appointments.values())
-      .filter(appointment => new Date(appointment.appointmentDate) >= now)
+      .filter(appointment => new Date(appointment.appointmentDate) >= currentTime)
       .sort((a, b) => 
         new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime()
       );
@@ -344,11 +351,15 @@ export class MemStorage implements IStorage {
 
   async createAppointment(insertAppointment: InsertAppointment): Promise<Appointment> {
     const id = this.currentAppointmentId++;
+    const appointmentCreationTime = new Date();
     const appointment: Appointment = { 
       ...insertAppointment,
       id,
       smsReminderSent: false,
-      createdAt: new Date()
+      status: insertAppointment.status || 'Scheduled',
+      notes: insertAppointment.notes || null,
+      createdAt: appointmentCreationTime,
+      updatedAt: appointmentCreationTime
     };
     
     this.appointments.set(id, appointment);
@@ -433,10 +444,16 @@ export class MemStorage implements IStorage {
 
   async createPatientHistory(insertHistory: InsertPatientHistory): Promise<PatientHistory> {
     const id = this.currentHistoryId++;
+    const historyCreationTime = new Date();
     const history: PatientHistory = { 
       ...insertHistory,
       id,
-      createdAt: new Date()
+      notes: insertHistory.notes || null,
+      diagnosis: insertHistory.diagnosis || null,
+      treatment: insertHistory.treatment || null,
+      prescriptions: insertHistory.prescriptions || null,
+      createdAt: historyCreationTime,
+      updatedAt: historyCreationTime
     };
     
     this.patientHistories.set(id, history);
@@ -473,19 +490,25 @@ export class MemStorage implements IStorage {
   }
 
   async updateSettings(updateData: Partial<InsertSettings>): Promise<Settings> {
+    const now = new Date();
     if (!this.appSettings) {
       this.appSettings = {
         id: 1,
         ...updateData,
-        twilioAccountSid: updateData.twilioAccountSid || process.env.TWILIO_ACCOUNT_SID || "",
-        twilioAuthToken: updateData.twilioAuthToken || process.env.TWILIO_AUTH_TOKEN || "",
-        twilioPhoneNumber: updateData.twilioPhoneNumber || process.env.TWILIO_PHONE_NUMBER || "",
+        twilioAccountSid: updateData.twilioAccountSid || process.env.TWILIO_ACCOUNT_SID || null,
+        twilioAuthToken: updateData.twilioAuthToken || process.env.TWILIO_AUTH_TOKEN || null,
+        twilioPhoneNumber: updateData.twilioPhoneNumber || process.env.TWILIO_PHONE_NUMBER || null,
         reminderHoursInAdvance: updateData.reminderHoursInAdvance || 24,
         systemName: updateData.systemName || "MediTrack",
-        createdAt: new Date()
+        createdAt: now,
+        updatedAt: now
       };
     } else {
-      this.appSettings = { ...this.appSettings, ...updateData };
+      this.appSettings = { 
+        ...this.appSettings, 
+        ...updateData,
+        updatedAt: now
+      };
     }
     
     return this.appSettings;
@@ -592,6 +615,10 @@ export class MemStorage implements IStorage {
     const newDocument: MedicalDocument = {
       ...document,
       id,
+      lastAccessed: null,
+      isArchived: document.isArchived || false,
+      category: document.category || "general",
+      description: document.description || null,
       createdAt: now,
       updatedAt: now
     };
@@ -676,6 +703,9 @@ export class MemStorage implements IStorage {
       const fullPatient: Patient = {
         ...patient,
         createdAt,
+        updatedAt: createdAt,
+        status: patient.status || 'Active',
+        email: patient.email || null,
         lastVisit
       };
       
