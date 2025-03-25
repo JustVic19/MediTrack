@@ -8,7 +8,8 @@ import {
   Bell, 
   Settings as SettingsIcon,
   LogOut,
-  Activity
+  Activity,
+  Stethoscope
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -33,7 +34,8 @@ export function Sidebar() {
     { name: 'Patients', href: '/patients', icon: UserRound },
     { name: 'Appointments', href: '/appointments', icon: Calendar },
     { name: 'Patient History', href: '/patient-history', icon: History },
-    { name: 'Health Timeline', href: '/health-timeline/1', icon: Activity },
+    { name: 'Health Timeline', href: '/health-timelines', icon: Activity },
+    { name: 'Symptom Checker', href: '/symptom-checker', icon: Stethoscope },
     { name: 'Notifications', href: '/notifications', icon: Bell },
     { name: 'Settings', href: '/settings', icon: SettingsIcon },
   ];

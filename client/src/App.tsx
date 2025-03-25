@@ -14,6 +14,7 @@ import Appointments from "@/pages/appointments";
 import PatientHistory from "@/pages/patient-history";
 import Settings from "@/pages/settings";
 import ProfilePage from "@/pages/profile";
+import SymptomChecker from "@/pages/symptom-checker";
 import AuthPage from "@/pages/auth-page";
 import NotFound from "@/pages/not-found";
 import MainLayout from "@/layouts/main-layout";
@@ -102,6 +103,33 @@ function AppRoutes() {
         component={() => (
           <MainLayout>
             <HealthTimelines />
+          </MainLayout>
+        )} 
+      />
+      
+      <ProtectedRoute 
+        path="/symptom-checker" 
+        component={() => (
+          <MainLayout>
+            <SymptomChecker />
+          </MainLayout>
+        )} 
+      />
+      
+      <ProtectedRoute 
+        path="/symptom-checker/:id" 
+        component={() => (
+          <MainLayout>
+            <SymptomChecker />
+          </MainLayout>
+        )} 
+      />
+      
+      <ProtectedRoute 
+        path="/patients/:patientId/symptom-checker" 
+        component={() => (
+          <MainLayout>
+            <SymptomChecker />
           </MainLayout>
         )} 
       />

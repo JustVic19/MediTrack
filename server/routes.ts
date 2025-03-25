@@ -400,6 +400,103 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Symptom Checker endpoints
+  app.get('/api/patients/:patientId/symptom-checks', async (req, res) => {
+    try {
+      const patientId = parseInt(req.params.patientId);
+      const symptomChecks = await storage.getSymptomChecks(patientId);
+      res.json(symptomChecks);
+    } catch (error) {
+      console.error('Error fetching symptom checks:', error);
+      res.status(500).json({ error: 'Failed to fetch symptom checks' });
+    }
+  });
+
+  app.get('/api/symptom-checks/:id', async (req, res) => {
+    try {
+      const checkId = parseInt(req.params.id);
+      const symptomCheck = await storage.getSymptomCheck(checkId);
+      
+      if (!symptomCheck) {
+        return res.status(404).json({ error: 'Symptom check not found' });
+      }
+      
+      res.json(symptomCheck);
+    } catch (error) {
+      console.error('Error fetching symptom check:', error);
+      res.status(500).json({ error: 'Failed to fetch symptom check details' });
+    }
+  });
+
+  app.post('/api/symptom-checks', async (req, res) => {
+    try {
+      const checkData = insertSymptomCheckSchema.parse(req.body);
+      const newSymptomCheck = await storage.createSymptomCheck(checkData);
+      res.status(201).json(newSymptomCheck);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ error: validationError.message });
+      }
+      console.error('Error creating symptom check:', error);
+      res.status(500).json({ error: 'Failed to create symptom check' });
+    }
+  });
+
+  app.put('/api/symptom-checks/:id', async (req, res) => {
+    try {
+      const checkId = parseInt(req.params.id);
+      const checkData = insertSymptomCheckSchema.partial().parse(req.body);
+      
+      const updatedCheck = await storage.updateSymptomCheck(checkId, checkData);
+      
+      if (!updatedCheck) {
+        return res.status(404).json({ error: 'Symptom check not found' });
+      }
+      
+      res.json(updatedCheck);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ error: validationError.message });
+      }
+      console.error('Error updating symptom check:', error);
+      res.status(500).json({ error: 'Failed to update symptom check' });
+    }
+  });
+
+  app.delete('/api/symptom-checks/:id', async (req, res) => {
+    try {
+      const checkId = parseInt(req.params.id);
+      const result = await storage.deleteSymptomCheck(checkId);
+      
+      if (!result) {
+        return res.status(404).json({ error: 'Symptom check not found' });
+      }
+      
+      res.status(204).end();
+    } catch (error) {
+      console.error('Error deleting symptom check:', error);
+      res.status(500).json({ error: 'Failed to delete symptom check' });
+    }
+  });
+
+  app.post('/api/symptom-checks/:id/analyze', async (req, res) => {
+    try {
+      const checkId = parseInt(req.params.id);
+      const analyzeResult = await storage.analyzeSymptoms(checkId);
+      
+      if (!analyzeResult) {
+        return res.status(404).json({ error: 'Symptom check not found' });
+      }
+      
+      res.json(analyzeResult);
+    } catch (error) {
+      console.error('Error analyzing symptoms:', error);
+      res.status(500).json({ error: 'Failed to analyze symptoms' });
+    }
+  });
+
   // User profile endpoints
   app.get('/api/user', requireAuth, async (req, res) => {
     try {
