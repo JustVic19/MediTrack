@@ -59,7 +59,9 @@ import {
   severityLevels, 
   durationOptions, 
   type SymptomCheck,
-  type InsertSymptomCheck
+  type InsertSymptomCheck,
+  type AnalysisResult,
+  type RecommendationResult
 } from '@shared/schema';
 import { apiRequest } from '@/lib/queryClient';
 import { Badge } from '@/components/ui/badge';
@@ -288,23 +290,7 @@ function SymptomForm({ patientId, onSubmit }: { patientId: number, onSubmit: (da
   );
 }
 
-// Define interfaces for the expected structure
-interface AnalysisResult {
-  urgencyLevel: string;
-  possibleConditions: Array<{
-    name: string;
-    probability: string;
-    description?: string;
-  }>;
-  disclaimer?: string;
-}
-
-interface Recommendations {
-  generalAdvice: string;
-  suggestedActions: string[];
-  followUpRecommendation: string;
-  disclaimer?: string;
-}
+// No longer needed as we import from shared/schema
 
 function SymptomAnalysisResults({ check }: { check: SymptomCheck }) {
   if (!check.analysis || !check.recommendations) {
@@ -321,7 +307,7 @@ function SymptomAnalysisResults({ check }: { check: SymptomCheck }) {
 
   // Type assertion for the analysis and recommendations
   const analysis = check.analysis as AnalysisResult;
-  const recommendations = check.recommendations as Recommendations;
+  const recommendations = check.recommendations as RecommendationResult;
 
   // Badge variants in the UI
   const urgencyColorMap: Record<string, "destructive" | "default" | "outline" | "secondary"> = {
