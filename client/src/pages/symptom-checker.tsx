@@ -743,7 +743,7 @@ export default function SymptomChecker() {
         severity: data.severity,
         duration: data.duration,
         checkDate: data.checkDate,
-        additionalNotes: data.additionalNotes
+        // Remove additionalNotes as it's not part of the InsertSymptomCheck schema
       };
       
       const response = await apiRequest('POST', '/api/symptom-checks', submissionData);
