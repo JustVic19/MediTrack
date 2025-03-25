@@ -125,14 +125,22 @@ export default function PatientDetail() {
   return (
     <div className="px-4 py-6 sm:px-6 md:px-8">
       {/* Page Header with Back Button */}
-      <div className="flex items-center mb-6">
-        <Button variant="ghost" size="sm" asChild className="mr-2">
-          <Link href="/patients">
-            <ChevronLeft className="h-4 w-4 mr-1" />
-            Back
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center">
+          <Button variant="ghost" size="sm" asChild className="mr-2">
+            <Link href="/patients">
+              <ChevronLeft className="h-4 w-4 mr-1" />
+              Back
+            </Link>
+          </Button>
+          <h2 className="text-2xl font-bold text-gray-800">Patient Details</h2>
+        </div>
+        <Button asChild className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700">
+          <Link href={`/health-timeline/${patientId}`}>
+            <FileText className="h-4 w-4 mr-2" />
+            View Health Timeline
           </Link>
         </Button>
-        <h2 className="text-2xl font-bold text-gray-800">Patient Details</h2>
       </div>
       
       {/* Patient Profile Card */}
@@ -362,7 +370,7 @@ export default function PatientDetail() {
             <CardHeader>
               <CardTitle className="flex justify-between items-center">
                 <span>Medical History</span>
-                <Button size="sm" variant="outline" asChild>
+                <Button size="sm" variant="default" asChild>
                   <Link href={`/health-timeline/${patientId}`}>
                     <FileText className="h-4 w-4 mr-2" />
                     View Health Timeline
