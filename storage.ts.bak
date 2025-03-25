@@ -595,5 +595,278 @@ export class MemStorage implements IStorage {
     console.log(`Created ${this.patientHistories.size} sample patient history entries`);
   }
 }
+      {
+        patientId: 'PT-002',
+        firstName: 'Emma',
+        lastName: 'Wilson',
+        email: 'emma.wilson@example.com',
+        phone: '555-234-5678',
+        dateOfBirth: new Date('1992-08-23'),
+        gender: 'Female',
+        address: '456 Oak Ave, Sometown, CA 90211',
+        status: 'Active',
+        medicalHistory: 'Asthma, Allergies',
+        smsOptIn: true,
+      },
+      {
+        patientId: 'PT-003',
+        firstName: 'Michael',
+        lastName: 'Brown',
+        email: 'michael.brown@example.com',
+        phone: '555-345-6789',
+        dateOfBirth: new Date('1975-12-10'),
+        gender: 'Male',
+        address: '789 Pine Rd, Othertown, CA 90212',
+        status: 'Inactive',
+        medicalHistory: 'Heart disease, High cholesterol',
+        smsOptIn: false,
+      },
+      {
+        patientId: 'PT-004',
+        firstName: 'Sophia',
+        lastName: 'Davis',
+        email: 'sophia.davis@example.com',
+        phone: '555-456-7890',
+        dateOfBirth: new Date('1988-03-30'),
+        gender: 'Female',
+        address: '321 Elm St, Newtown, CA 90213',
+        status: 'Active',
+        medicalHistory: 'Migraines, Depression',
+        smsOptIn: true,
+      },
+      {
+        patientId: 'PT-005',
+        firstName: 'Robert',
+        lastName: 'Johnson',
+        email: 'robert.johnson@example.com',
+        phone: '555-567-8901',
+        dateOfBirth: new Date('1965-07-18'),
+        gender: 'Male',
+        address: '654 Maple Ave, Lasttown, CA 90214',
+        status: 'Active',
+        medicalHistory: 'Arthritis, GERD',
+        smsOptIn: true,
+      },
+      {
+        patientId: 'PT-006',
+        firstName: 'Olivia',
+        lastName: 'Martinez',
+        email: 'olivia.martinez@example.com',
+        phone: '555-678-9012',
+        dateOfBirth: new Date('1998-11-05'),
+        gender: 'Female',
+        address: '987 Cedar Rd, Thisplace, CA 90215',
+        status: 'Active',
+        medicalHistory: 'Anxiety, Hypothyroidism',
+        smsOptIn: true,
+      },
+      {
+        patientId: 'PT-007',
+        firstName: 'William',
+        lastName: 'Garcia',
+        email: 'william.garcia@example.com',
+        phone: '555-789-0123',
+        dateOfBirth: new Date('1982-02-28'),
+        gender: 'Male',
+        address: '246 Birch St, Thattown, CA 90216',
+        status: 'Active',
+        medicalHistory: 'Lower back pain, Insomnia',
+        smsOptIn: false,
+      },
+      {
+        patientId: 'PT-008',
+        firstName: 'Ava',
+        lastName: 'Rodriguez',
+        email: 'ava.rodriguez@example.com',
+        phone: '555-890-1234',
+        dateOfBirth: new Date('1995-09-12'),
+        gender: 'Female',
+        address: '135 Walnut Ave, Somewhere, CA 90217',
+        status: 'Active',
+        medicalHistory: 'Eczema, Seasonal allergies',
+        smsOptIn: true,
+      },
+    ];
+
+    const today = new Date();
+    const twoMonthsAgo = new Date();
+    twoMonthsAgo.setMonth(today.getMonth() - 2);
+
+    // Create the patients and add them to the map
+    patients.forEach((patientData, index) => {
+      // Half of the patients were created two months ago (for growth metrics)
+      const createdAt = index < 4 ? twoMonthsAgo : today;
+      // Last visit is somewhere between creation date and today
+      const lastVisitOffset = Math.floor(Math.random() * (today.getTime() - createdAt.getTime()));
+      const lastVisit = new Date(createdAt.getTime() + lastVisitOffset);
+      
+      const patient: Patient = {
+        id: this.currentPatientId++,
+        patientId: patientData.patientId,
+        firstName: patientData.firstName,
+        lastName: patientData.lastName,
+        email: patientData.email,
+        phone: patientData.phone,
+        dateOfBirth: patientData.dateOfBirth,
+        gender: patientData.gender,
+        address: patientData.address,
+        status: patientData.status,
+        medicalHistory: patientData.medicalHistory,
+        smsOptIn: patientData.smsOptIn,
+        createdAt: createdAt,
+        lastVisit: lastVisit
+      };
+      
+      this.patients.set(patient.id, patient);
+    });
+    
+    console.log(`Created sample patients: ${this.patients.size}`);
+  }
+
+  private createSampleAppointments() {
+    // Array of possible appointment reasons
+    const reasons = [
+      'Annual check-up',
+      'Follow-up',
+      'Consultation',
+      'Vaccination',
+      'Prescription renewal',
+      'Lab results review',
+      'New patient intake',
+      'Emergency',
+      'Specialist referral',
+      'Therapy session'
+    ];
+    
+    // Array of possible appointment statuses
+    const statuses = ['Scheduled', 'Completed', 'Cancelled', 'No-show'];
+    
+    // Create appointments for each patient
+    this.patients.forEach((patient) => {
+      // Create 2-4 appointments per patient
+      const numAppointments = 2 + Math.floor(Math.random() * 3);
+      
+      for (let i = 0; i < numAppointments; i++) {
+        // Random reason
+        const reason = reasons[Math.floor(Math.random() * reasons.length)];
+        // Random status
+        const status = statuses[Math.floor(Math.random() * statuses.length)];
+        
+        // Create appointment dates
+        const today = new Date();
+        const pastDate = new Date();
+        pastDate.setDate(today.getDate() - Math.floor(Math.random() * 30)); // Random date in the past month
+        
+        const futureDate = new Date();
+        futureDate.setDate(today.getDate() + Math.floor(Math.random() * 30)); // Random date in the next month
+        
+        // 1/3 of appointments are today, 1/3 are past, 1/3 are future
+        let appointmentDate;
+        if (i % 3 === 0) {
+          // Today's appointment
+          appointmentDate = new Date();
+          appointmentDate.setHours(9 + Math.floor(Math.random() * 8)); // Between 9 AM and 5 PM
+          appointmentDate.setMinutes(Math.floor(Math.random() * 4) * 15); // 0, 15, 30, or 45 minutes
+        } else if (i % 3 === 1) {
+          // Past appointment
+          appointmentDate = pastDate;
+        } else {
+          // Future appointment
+          appointmentDate = futureDate;
+        }
+        
+        // Create appointment
+        const appointment: Appointment = {
+          id: this.currentAppointmentId++,
+          patientId: patient.id,
+          appointmentDate: appointmentDate,
+          reason: reason,
+          status: status,
+          notes: status === 'Completed' ? 'Patient responded well to treatment.' : null,
+          createdAt: new Date(appointmentDate.getTime() - 86400000 * 7), // Created a week before the appointment
+          smsReminderSent: Math.random() > 0.3 // 70% of appointments have SMS reminders sent
+        };
+        
+        this.appointments.set(appointment.id, appointment);
+        
+        // Increment SMS counter for metrics
+        if (appointment.smsReminderSent) {
+          this.smsRemindersSent++;
+        }
+      }
+    });
+    
+    console.log(`Created sample appointments: ${this.appointments.size}`);
+  }
+
+  private createSamplePatientHistories() {
+    // Array of possible diagnoses
+    const diagnoses = [
+      'Common cold',
+      'Influenza',
+      'Hypertension',
+      'Diabetes mellitus',
+      'Asthma exacerbation',
+      'Acute sinusitis',
+      'Anxiety disorder',
+      'Depression',
+      'Lower back pain',
+      'Migraine'
+    ];
+    
+    // Array of possible treatments
+    const treatments = [
+      'Rest and fluids',
+      'Antibiotics prescribed',
+      'Medication adjustment',
+      'Physical therapy referral',
+      'Dietary modifications',
+      'Lifestyle counseling',
+      'Cognitive behavioral therapy',
+      'Surgery scheduled',
+      'Pain management',
+      'Observation'
+    ];
+    
+    // Array of possible prescriptions
+    const prescriptions = [
+      'Amoxicillin 500mg TID for 7 days',
+      'Lisinopril 10mg daily',
+      'Metformin 500mg BID',
+      'Albuterol inhaler PRN',
+      'Ibuprofen 600mg TID PRN pain',
+      'Fluoxetine 20mg daily',
+      'Simvastatin 20mg at bedtime',
+      'Levothyroxine 50mcg daily',
+      'Prednisone 20mg daily, taper over 5 days',
+      null // Some entries won't have prescriptions
+    ];
+    
+    // Create history entries for completed appointments
+    this.appointments.forEach((appointment) => {
+      if (appointment.status === 'Completed') {
+        // Get random diagnosis, treatment, and prescription
+        const diagnosis = diagnoses[Math.floor(Math.random() * diagnoses.length)];
+        const treatment = treatments[Math.floor(Math.random() * treatments.length)];
+        const prescription = prescriptions[Math.floor(Math.random() * prescriptions.length)];
+        
+        // Create history entry
+        const history: PatientHistory = {
+          id: this.currentHistoryId++,
+          patientId: appointment.patientId,
+          visitDate: appointment.appointmentDate,
+          notes: 'Patient presented with symptoms. Examination performed.',
+          diagnosis: diagnosis,
+          treatment: treatment,
+          prescriptions: prescription,
+          createdAt: new Date(appointment.appointmentDate.getTime() + 3600000) // 1 hour after appointment
+        };
+        
+        this.patientHistories.set(history.id, history);
+      }
+    });
+    
+    console.log(`Created sample patient histories: ${this.patientHistories.size}`);
+  }
 
 export const storage = new MemStorage();
