@@ -288,6 +288,24 @@ function SymptomForm({ patientId, onSubmit }: { patientId: number, onSubmit: (da
   );
 }
 
+// Define interfaces for the expected structure
+interface AnalysisResult {
+  urgencyLevel: string;
+  possibleConditions: Array<{
+    name: string;
+    probability: string;
+    description?: string;
+  }>;
+  disclaimer?: string;
+}
+
+interface Recommendations {
+  generalAdvice: string;
+  suggestedActions: string[];
+  followUpRecommendation: string;
+  disclaimer?: string;
+}
+
 function SymptomAnalysisResults({ check }: { check: SymptomCheck }) {
   if (!check.analysis || !check.recommendations) {
     return (
@@ -301,10 +319,15 @@ function SymptomAnalysisResults({ check }: { check: SymptomCheck }) {
     );
   }
 
-  const urgencyColorMap: Record<string, string> = {
+  // Type assertion for the analysis and recommendations
+  const analysis = check.analysis as AnalysisResult;
+  const recommendations = check.recommendations as Recommendations;
+
+  // Badge variants in the UI
+  const urgencyColorMap: Record<string, "destructive" | "default" | "outline" | "secondary"> = {
     high: 'destructive',
-    medium: 'warning',
-    low: 'success',
+    medium: 'secondary',
+    low: 'outline',
   };
 
   return (
@@ -317,8 +340,8 @@ function SymptomAnalysisResults({ check }: { check: SymptomCheck }) {
         
         <div className="flex items-center gap-2 mb-4">
           <span className="text-sm text-muted-foreground">Urgency Level:</span>
-          <Badge variant={urgencyColorMap[check.analysis.urgencyLevel] as any || 'default'}>
-            {check.analysis.urgencyLevel.charAt(0).toUpperCase() + check.analysis.urgencyLevel.slice(1)}
+          <Badge variant={urgencyColorMap[analysis.urgencyLevel] || 'default'}>
+            {analysis.urgencyLevel.charAt(0).toUpperCase() + analysis.urgencyLevel.slice(1)}
           </Badge>
         </div>
         
@@ -326,9 +349,9 @@ function SymptomAnalysisResults({ check }: { check: SymptomCheck }) {
           <AccordionItem value="conditions">
             <AccordionTrigger>Possible Conditions</AccordionTrigger>
             <AccordionContent>
-              {check.analysis.possibleConditions.length > 0 ? (
+              {analysis.possibleConditions.length > 0 ? (
                 <ul className="space-y-3">
-                  {check.analysis.possibleConditions.map((condition, index) => (
+                  {analysis.possibleConditions.map((condition, index) => (
                     <li key={index} className="bg-white dark:bg-slate-800 p-3 rounded-md">
                       <div className="font-medium">{condition.name}</div>
                       <div className="text-sm text-muted-foreground mt-1">
@@ -347,10 +370,10 @@ function SymptomAnalysisResults({ check }: { check: SymptomCheck }) {
           </AccordionItem>
         </Accordion>
         
-        {check.analysis.disclaimer && (
+        {analysis.disclaimer && (
           <div className="mt-4 text-sm text-muted-foreground bg-background p-3 rounded-md border">
             <span className="font-medium">Disclaimer: </span>
-            {check.analysis.disclaimer}
+            {analysis.disclaimer}
           </div>
         )}
       </div>
