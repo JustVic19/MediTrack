@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
-import { useLocation } from 'wouter';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { usePatientAuth } from '@/hooks/use-patient-auth';
-import { useToast } from '@/hooks/use-toast';
-
+import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { usePatientAuth } from "@/hooks/use-patient-auth";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -15,6 +14,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { Loader2 } from "lucide-react";
 
 // Form validation schemas
 const loginSchema = z.object({
@@ -108,87 +108,41 @@ export default function PatientLogin() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-b from-indigo-50 to-white">
-      <div className="hidden md:flex md:w-1/2 bg-indigo-600 text-white p-12 flex-col justify-between">
-        <div>
-          <Logo size={60} className="text-white" />
-          <h1 className="text-4xl font-bold mt-12">Welcome to the MediTrack Patient Portal</h1>
-          <p className="text-xl mt-4 text-indigo-100">
-            Access your health information securely and connect with your healthcare providers.
-          </p>
-          
-          <div className="mt-12 space-y-6">
-            <div className="flex items-start space-x-3">
-              <div className="mt-1 bg-white text-indigo-600 p-1 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg">View appointments</h3>
-                <p className="text-indigo-200">See your upcoming appointments and get reminders</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start space-x-3">
-              <div className="mt-1 bg-white text-indigo-600 p-1 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg">Access medical records</h3>
-                <p className="text-indigo-200">Review your health history and test results</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start space-x-3">
-              <div className="mt-1 bg-white text-indigo-600 p-1 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg">Message your provider</h3>
-                <p className="text-indigo-200">Send secure messages to your healthcare team</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="mt-12 pt-12 border-t border-indigo-500 text-indigo-200">
-          <p>© {new Date().getFullYear()} MediTrack. All rights reserved.</p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background to-secondary/10 p-4">
+      <div className="absolute top-4 right-4 z-10">
+        <div className="bg-card p-1 rounded-md shadow-md border border-border">
+          <ThemeToggle />
         </div>
       </div>
-      
-      <div className="w-full md:w-1/2 p-6 flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader className="space-y-1">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col">
-                <CardTitle className="text-2xl font-bold">Patient Portal</CardTitle>
-                <CardDescription>
-                  Access your personal health information securely
-                </CardDescription>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="bg-card p-1 rounded-md shadow-sm border border-border">
-                  <ThemeToggle />
-                </div>
-                <Logo size={40} className="text-indigo-600 md:hidden" />
-              </div>
-            </div>
+      <div className="w-full max-w-md">
+        {/* Logo and Title */}
+        <div className="flex flex-col items-center mb-6">
+          <img 
+            src="/assets/meditrack-logo.svg" 
+            alt="MediTrack Logo" 
+            className="h-24 w-24 mb-2"
+            onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+              const target = e.target as HTMLImageElement;
+              target.onerror = null;
+              target.style.display = 'none';
+            }}
+          />
+          <Logo size={40} className="mb-2" />
+          <h1 className="text-3xl font-bold text-primary">MediTrack</h1>
+          <p className="text-muted-foreground text-center mt-2">
+            Patient Portal Access
+          </p>
+        </div>
+
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle className="text-xl font-bold text-center">
+              {activeTab === "login" ? "Patient Sign In" : "Activate Your Account"}
+            </CardTitle>
           </CardHeader>
-          
           <CardContent>
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2 mb-4">
+            <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="login">Login</TabsTrigger>
                 <TabsTrigger value="activate">Activate Account</TabsTrigger>
               </TabsList>
@@ -238,7 +192,14 @@ export default function PatientLogin() {
                       className="w-full"
                       disabled={loginMutation.isPending}
                     >
-                      {loginMutation.isPending ? "Logging in..." : "Login"}
+                      {loginMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Logging in...
+                        </>
+                      ) : (
+                        "Login"
+                      )}
                     </Button>
                   </form>
                 </Form>
@@ -333,7 +294,14 @@ export default function PatientLogin() {
                         className="w-full"
                         disabled={activateMutation.isPending}
                       >
-                        {activateMutation.isPending ? "Activating..." : "Activate Account"}
+                        {activateMutation.isPending ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Activating...
+                          </>
+                        ) : (
+                          "Activate Account"
+                        )}
                       </Button>
                     </form>
                   </Form>
@@ -342,17 +310,23 @@ export default function PatientLogin() {
             </Tabs>
           </CardContent>
           
-          <CardFooter className="flex-col space-y-4">
-            <div className="text-sm text-gray-500 text-center">
-              <p>Don't have an account? Ask your healthcare provider for an activation link.</p>
+          <CardFooter className="flex flex-col items-center justify-center space-y-4">
+            <div className="text-sm text-muted-foreground">
+              {activeTab === "login" ? (
+                <span>Don't have an account? <Button variant="link" className="p-0 h-auto" onClick={() => setActiveTab("activate")}>Activate an account</Button></span>
+              ) : (
+                <span>Already have an account? <Button variant="link" className="p-0 h-auto" onClick={() => setActiveTab("login")}>Login</Button></span>
+              )}
             </div>
-            <Separator className="my-2" />
-            <div className="text-sm text-center">
-              <p className="mb-2">Are you a doctor or staff member?</p>
+
+            <Separator className="w-full" />
+
+            <div className="text-sm text-center w-full">
+              <p className="mb-2">Looking for the Staff Login?</p>
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="w-full" 
+                className="w-full"
                 onClick={() => navigate("/auth")}
               >
                 Go to Staff Login
@@ -360,6 +334,10 @@ export default function PatientLogin() {
             </div>
           </CardFooter>
         </Card>
+        
+        <p className="text-sm text-muted-foreground text-center mt-6">
+          By signing in, you agree to our Terms of Service and Privacy Policy.
+        </p>
       </div>
     </div>
   );
