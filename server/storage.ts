@@ -229,6 +229,14 @@ export class MemStorage implements IStorage {
       verificationExpires: insertUser.verificationExpires || null,
       passwordResetToken: null,
       passwordResetExpires: null,
+      // Two-factor authentication fields
+      twoFactorEnabled: insertUser.twoFactorEnabled || false,
+      twoFactorSecret: insertUser.twoFactorSecret || null,
+      twoFactorRecoveryCodes: insertUser.twoFactorRecoveryCodes || null,
+      twoFactorBackupCodes: insertUser.twoFactorBackupCodes || null,
+      lastLoginAt: null,
+      loginAttempts: 0,
+      lockedUntil: null,
       createdAt: userCreationTime,
       updatedAt: userCreationTime
     };

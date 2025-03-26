@@ -16,6 +16,14 @@ export const users = pgTable("users", {
   verificationExpires: timestamp("verification_expires"),
   passwordResetToken: text("password_reset_token"),
   passwordResetExpires: timestamp("password_reset_expires"),
+  // Two-factor authentication fields
+  twoFactorEnabled: boolean("two_factor_enabled").default(false).notNull(),
+  twoFactorSecret: text("two_factor_secret"),
+  twoFactorRecoveryCodes: json("two_factor_recovery_codes"),
+  twoFactorBackupCodes: json("two_factor_backup_codes"),
+  lastLoginAt: timestamp("last_login_at"),
+  loginAttempts: integer("login_attempts").default(0).notNull(),
+  lockedUntil: timestamp("locked_until"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
