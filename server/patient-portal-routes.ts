@@ -1,7 +1,38 @@
 import { Express, Request, Response } from "express";
 import { storage } from "./storage";
+import { 
+  patientLogin, 
+  patientLogout, 
+  checkPatientAuthStatus, 
+  setPatientPortalPassword,
+  generatePatientActivation,
+  requirePatientAuth
+} from "./patient-auth";
 
 export function registerPatientPortalRoutes(app: Express) {
+  // Patient authentication routes
+  app.post('/api/patient/login', patientLogin);
+  app.post('/api/patient/logout', patientLogout);
+  app.get('/api/patient/auth-status', checkPatientAuthStatus);
+  app.post('/api/patient/set-password', setPatientPortalPassword);
+  app.post('/api/patient/generate-activation', generatePatientActivation);
+  
+  // All routes below this middleware require patient authentication
+  const patientProtectedRoutes = [
+    '/api/patient-portal/appointments',
+    '/api/patient-portal/history',
+    '/api/patient-portal/documents',
+    '/api/patient-portal/questionnaires',
+    '/api/patient-portal/questionnaire-responses',
+    '/api/patient-portal/medications',
+    '/api/patient-portal/refill-requests',
+    '/api/patient-portal/conversations',
+    '/api/patient-portal/messages'
+  ];
+  
+  patientProtectedRoutes.forEach(route => {
+    app.use(route, requirePatientAuth);
+  });
   // Patient Portal API endpoints
   app.get('/api/patient-portal/appointments', async (req, res) => {
     try {

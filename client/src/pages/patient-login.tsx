@@ -2,9 +2,8 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
 import { z } from 'zod';
-import { apiRequest, queryClient } from '@/lib/queryClient';
+import { usePatientAuth } from '@/hooks/use-patient-auth';
 import { useToast } from '@/hooks/use-toast';
 
 import { Button } from '@/components/ui/button';
@@ -39,6 +38,9 @@ export default function PatientLogin() {
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState('login');
   const [activationSuccess, setActivationSuccess] = useState(false);
+  
+  // Use the patient auth hook
+  const { patient, loginMutation, activateMutation } = usePatientAuth();
 
   // Login form
   const loginForm = useForm<LoginFormValues>({
@@ -60,6 +62,13 @@ export default function PatientLogin() {
     },
   });
   
+  // Redirect to portal if already logged in
+  useEffect(() => {
+    if (patient) {
+      navigate('/patient-portal');
+    }
+  }, [patient, navigate]);
+  
   // Handle URL parameters for activation
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -73,59 +82,27 @@ export default function PatientLogin() {
     }
   }, [activateForm]);
 
-  const loginMutation = useMutation({
-    mutationFn: async (credentials: LoginFormValues) => {
-      const res = await apiRequest('POST', '/api/patient/login', credentials);
-      return await res.json();
-    },
-    onSuccess: (data) => {
-      queryClient.setQueryData(['/api/patient'], data.patient);
-      toast({
-        title: 'Login successful',
-        description: `Welcome back, ${data.patient.firstName}!`,
-      });
-      navigate('/patient-portal');
-    },
-    onError: (error: Error) => {
-      toast({
-        title: 'Login failed',
-        description: error.message,
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const onLoginSubmit = (values: LoginFormValues) => {
-    loginMutation.mutate(values);
-  };
-
-  const activateMutation = useMutation({
-    mutationFn: async (data: ActivateFormValues) => {
-      const res = await apiRequest('POST', '/api/patient/activate', {
-        patientId: data.patientId,
-        token: data.token,
-        password: data.password,
-      });
-      return await res.json();
-    },
-    onSuccess: () => {
+  // Handle successful activation
+  useEffect(() => {
+    if (activateMutation.isSuccess) {
       setActivationSuccess(true);
       toast({
         title: 'Account activated',
         description: 'Your account has been activated successfully. You can now login.',
       });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: 'Activation failed',
-        description: error.message,
-        variant: 'destructive',
-      });
-    },
-  });
+    }
+  }, [activateMutation.isSuccess, toast]);
+
+  const onLoginSubmit = (values: LoginFormValues) => {
+    loginMutation.mutate(values);
+  };
 
   const onActivateSubmit = (values: ActivateFormValues) => {
-    activateMutation.mutate(values);
+    activateMutation.mutate({
+      patientId: values.patientId,
+      token: values.token,
+      password: values.password
+    });
   };
 
   return (
