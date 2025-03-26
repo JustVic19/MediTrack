@@ -304,6 +304,11 @@ export class MemStorage implements IStorage {
       ...insertPatient,
       id,
       patientId,
+      email: insertPatient.email || null, // Ensure email is explicitly null if not provided
+      address: insertPatient.address || null, // Ensure address is explicitly null if not provided
+      medicalHistory: insertPatient.medicalHistory || null, // Ensure medicalHistory is explicitly null
+      status: insertPatient.status || 'Active',
+      smsOptIn: insertPatient.smsOptIn !== undefined ? insertPatient.smsOptIn : false,
       createdAt: patientCreationTime,
       updatedAt: patientCreationTime,
       lastVisit: insertPatient.lastVisit || patientCreationTime
@@ -554,8 +559,9 @@ export class MemStorage implements IStorage {
     const symptomCheck: SymptomCheck = {
       ...check,
       id,
-      analysis: null,
-      recommendations: null,
+      checkDate: check.checkDate || now, // Ensure checkDate is provided
+      analysis: undefined, // using undefined instead of null
+      recommendations: undefined, // using undefined instead of null
       status: 'pending',
       createdAt: now,
       updatedAt: now
@@ -637,10 +643,13 @@ export class MemStorage implements IStorage {
     const newDocument: MedicalDocument = {
       ...document,
       id,
+      uploadDate: now, // Explicitly set uploadDate
       lastAccessed: null,
-      isArchived: document.isArchived || false,
+      uploadedBy: document.uploadedBy || 1, // Default to admin user if not provided
+      isArchived: document.isArchived !== undefined ? document.isArchived : false,
       category: document.category || "general",
       description: document.description || null,
+      contentType: document.contentType || "application/pdf", // Default content type
       createdAt: now,
       updatedAt: now
     };
