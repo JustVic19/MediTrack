@@ -461,7 +461,20 @@ export function registerPatientPortalRoutes(app: Express) {
       // This would normally come from a database
       const today = new Date();
       
-      let messages = [];
+      interface Message {
+        id: number;
+        conversationId: number;
+        senderId: number;
+        senderName: string;
+        senderRole: 'patient' | 'doctor' | 'staff';
+        content: string;
+        attachmentUrl?: string;
+        attachmentType?: string;
+        isRead: boolean;
+        createdAt: Date;
+      }
+      
+      let messages: Message[] = [];
       
       // Different messages based on conversation ID
       if (conversationId === 1) {
