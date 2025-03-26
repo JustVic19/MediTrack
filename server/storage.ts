@@ -28,6 +28,8 @@ export interface IStorage {
   getAllPatients(): Promise<Patient[]>;
   getPatient(id: number): Promise<Patient | undefined>;
   getPatientByPatientId(patientId: string): Promise<Patient | undefined>;
+  getPatientByPortalUsername(username: string): Promise<Patient | undefined>;
+  getPatientByActivationToken(token: string): Promise<Patient | undefined>;
   searchPatients(searchTerm: string): Promise<Patient[]>;
   createPatient(patient: InsertPatient): Promise<Patient>;
   updatePatient(id: number, patient: Partial<InsertPatient>): Promise<Patient | undefined>;
@@ -279,6 +281,18 @@ export class MemStorage implements IStorage {
   async getPatientByPatientId(patientId: string): Promise<Patient | undefined> {
     return Array.from(this.patients.values()).find(
       (patient) => patient.patientId === patientId
+    );
+  }
+
+  async getPatientByPortalUsername(username: string): Promise<Patient | undefined> {
+    return Array.from(this.patients.values()).find(
+      (patient) => patient.portalUsername === username
+    );
+  }
+
+  async getPatientByActivationToken(token: string): Promise<Patient | undefined> {
+    return Array.from(this.patients.values()).find(
+      (patient) => patient.portalActivationToken === token
     );
   }
 
