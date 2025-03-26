@@ -117,17 +117,7 @@ export default function PatientLogin() {
       <div className="w-full max-w-md">
         {/* Logo and Title */}
         <div className="flex flex-col items-center mb-6">
-          <img 
-            src="/assets/meditrack-logo.svg" 
-            alt="MediTrack Logo" 
-            className="h-24 w-24 mb-2"
-            onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-              const target = e.target as HTMLImageElement;
-              target.onerror = null;
-              target.style.display = 'none';
-            }}
-          />
-          <Logo size={40} className="mb-2" />
+          <Logo size={60} className="mb-2" />
           <h1 className="text-3xl font-bold text-primary">MediTrack</h1>
           <p className="text-muted-foreground text-center mt-2">
             Patient Portal Access
