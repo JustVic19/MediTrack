@@ -99,6 +99,16 @@ export class DatabaseStorage implements IStorage {
     const result = await db.select().from(patients).where(eq(patients.patientId, patientId));
     return result.length > 0 ? result[0] : undefined;
   }
+  
+  async getPatientByPortalUsername(username: string): Promise<Patient | undefined> {
+    const result = await db.select().from(patients).where(eq(patients.portalUsername, username));
+    return result.length > 0 ? result[0] : undefined;
+  }
+  
+  async getPatientByActivationToken(token: string): Promise<Patient | undefined> {
+    const result = await db.select().from(patients).where(eq(patients.portalActivationToken, token));
+    return result.length > 0 ? result[0] : undefined;
+  }
 
   async searchPatients(searchTerm: string): Promise<Patient[]> {
     const searchPattern = `%${searchTerm}%`;

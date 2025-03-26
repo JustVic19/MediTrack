@@ -103,7 +103,7 @@ export function PatientAuthProvider({ children }: { children: ReactNode }) {
   // Patient account activation
   const activateMutation = useMutation({
     mutationFn: async (data: ActivateCredentials) => {
-      const res = await apiRequest('POST', '/api/patient/activate', data);
+      const res = await apiRequest('POST', '/api/patient/set-password', data);
       return await res.json();
     },
     onSuccess: () => {
