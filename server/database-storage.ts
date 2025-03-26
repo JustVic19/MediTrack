@@ -6,7 +6,10 @@ import {
   InsertPatientHistory, Settings, InsertSettings,
   SymptomCheck, InsertSymptomCheck, MedicalDocument, InsertMedicalDocument
 } from '@shared/schema';
-import { users, patients, appointments, patientHistory, settings, symptomChecks } from '@shared/schema';
+import { 
+  users, patients, appointments, patientHistory, 
+  settings, symptomChecks, medicalDocuments 
+} from '@shared/schema';
 import { eq, and, gte, lte, like, desc, sql } from 'drizzle-orm';
 import session from "express-session";
 import { format, startOfDay, endOfDay, addDays } from 'date-fns';
@@ -295,15 +298,21 @@ export class DatabaseStorage implements IStorage {
   
   // Symptom Checker operations
   async getSymptomChecks(patientId: number): Promise<SymptomCheck[]> {
-    return db.select()
+    const results = await db.select()
       .from(symptomChecks)
       .where(eq(symptomChecks.patientId, patientId))
       .orderBy(desc(symptomChecks.checkDate));
+      
+    // Cast results to SymptomCheck type
+    return results as unknown as SymptomCheck[];
   }
 
   async getSymptomCheck(id: number): Promise<SymptomCheck | undefined> {
     const result = await db.select().from(symptomChecks).where(eq(symptomChecks.id, id));
-    return result.length > 0 ? result[0] : undefined;
+    if (result.length === 0) return undefined;
+    
+    // Cast result to SymptomCheck type
+    return result[0] as unknown as SymptomCheck;
   }
 
   async createSymptomCheck(check: InsertSymptomCheck): Promise<SymptomCheck> {
@@ -311,23 +320,28 @@ export class DatabaseStorage implements IStorage {
       ...check,
       checkDate: check.checkDate || new Date(),
       status: check.status || 'pending',
-      analysis: null,
-      recommendations: null
     }).returning();
     
-    return result[0];
+    // Cast result to SymptomCheck type
+    return result[0] as unknown as SymptomCheck;
   }
 
   async updateSymptomCheck(id: number, data: Partial<SymptomCheck>): Promise<SymptomCheck | undefined> {
+    // Remove completedAt if it exists as it's not in the schema
+    const { completedAt, ...updateData } = data as any;
+    
     const result = await db.update(symptomChecks)
       .set({
-        ...data,
+        ...updateData,
         updatedAt: new Date(),
       })
       .where(eq(symptomChecks.id, id))
       .returning();
     
-    return result.length > 0 ? result[0] : undefined;
+    if (result.length === 0) return undefined;
+    
+    // Cast result to SymptomCheck type
+    return result[0] as unknown as SymptomCheck;
   }
 
   async deleteSymptomCheck(id: number): Promise<boolean> {
@@ -348,30 +362,18 @@ export class DatabaseStorage implements IStorage {
       const analyzedCheck = analyzeSymptoms(check);
       
       // Update the symptom check with the analysis results
-      const result = await db.update(symptomChecks)
-        .set({
-          status: analyzedCheck.status,
-          analysis: analyzedCheck.analysis,
-          recommendations: analyzedCheck.recommendations,
-          updatedAt: new Date()
-        })
-        .where(eq(symptomChecks.id, checkId))
-        .returning();
-      
-      return result.length > 0 ? result[0] : undefined;
+      return await this.updateSymptomCheck(checkId, {
+        status: 'completed',
+        analysis: analyzedCheck.analysis,
+        recommendations: analyzedCheck.recommendations
+      });
     } catch (error) {
       console.error('Error analyzing symptoms:', error);
       
       // If there's an error in the symptom analyzer, update the check with an error status
-      const result = await db.update(symptomChecks)
-        .set({
-          status: 'error',
-          updatedAt: new Date()
-        })
-        .where(eq(symptomChecks.id, checkId))
-        .returning();
-      
-      return result.length > 0 ? result[0] : undefined;
+      return await this.updateSymptomCheck(checkId, {
+        status: 'error'
+      });
     }
   }
   
@@ -423,116 +425,42 @@ export class DatabaseStorage implements IStorage {
     };
   }
 
-  // Symptom Checker operations
-  async getSymptomChecks(patientId: number): Promise<SymptomCheck[]> {
-    return await db
-      .select()
-      .from(symptomChecks)
-      .where(eq(symptomChecks.patientId, patientId))
-      .orderBy(desc(symptomChecks.createdAt));
-  }
-
-  async getSymptomCheck(id: number): Promise<SymptomCheck | undefined> {
-    const result = await db
-      .select()
-      .from(symptomChecks)
-      .where(eq(symptomChecks.id, id));
-    return result.length > 0 ? result[0] : undefined;
-  }
-
-  async createSymptomCheck(check: InsertSymptomCheck): Promise<SymptomCheck> {
-    const [result] = await db
-      .insert(symptomChecks)
-      .values(check)
-      .returning();
-    return result;
-  }
-
-  async updateSymptomCheck(id: number, data: Partial<SymptomCheck>): Promise<SymptomCheck | undefined> {
-    const [result] = await db
-      .update(symptomChecks)
-      .set(data)
-      .where(eq(symptomChecks.id, id))
-      .returning();
-    return result;
-  }
-
-  async deleteSymptomCheck(id: number): Promise<boolean> {
-    const result = await db
-      .delete(symptomChecks)
-      .where(eq(symptomChecks.id, id));
-    return result.count > 0;
-  }
-
-  async analyzeSymptoms(checkId: number): Promise<SymptomCheck | undefined> {
-    // Get the symptom check
-    const check = await this.getSymptomCheck(checkId);
-    if (!check) return undefined;
-    
-    // In a real implementation, this would call an external service or use a local algorithm
-    // For now, we'll use a similar implementation to the MemStorage version
-    
-    try {
-      // Import the analyzer from symptom-analyzer.ts
-      const { analyzeSymptoms } = await import('./symptom-analyzer');
-      
-      // Run the analysis
-      const analyzedCheck = analyzeSymptoms(check);
-      
-      // Save the results back to the database
-      return await this.updateSymptomCheck(checkId, {
-        analysis: analyzedCheck.analysis,
-        recommendations: analyzedCheck.recommendations,
-        status: 'completed',
-        completedAt: new Date()
-      });
-    } catch (error) {
-      console.error('Error during symptom analysis:', error);
-      return await this.updateSymptomCheck(checkId, {
-        status: 'error',
-        completedAt: new Date()
-      });
-    }
-  }
-
   // Medical Document operations
   async getPatientDocuments(patientId: number): Promise<MedicalDocument[]> {
-    // This would typically use the medicalDocuments table from the schema
-    // For now returning an empty array as the table may not be fully set up
-    return [];
+    return db.select()
+      .from(medicalDocuments)
+      .where(eq(medicalDocuments.patientId, patientId))
+      .orderBy(desc(medicalDocuments.uploadDate));
   }
 
   async getDocument(id: number): Promise<MedicalDocument | undefined> {
-    // This would typically use the medicalDocuments table from the schema
-    return undefined;
+    const result = await db.select().from(medicalDocuments).where(eq(medicalDocuments.id, id));
+    return result.length > 0 ? result[0] : undefined;
   }
 
   async createDocument(document: InsertMedicalDocument): Promise<MedicalDocument> {
-    // This would insert into the medicalDocuments table
-    // For now returning a placeholder as the table may not be fully set up
-    const now = new Date();
-    return {
-      id: 1,
-      patientId: document.patientId,
-      name: document.name,
-      type: document.type,
-      size: document.size || 0,
-      uploadDate: now,
-      description: document.description || '',
-      filePath: document.filePath || '',
-      uploadedBy: document.uploadedBy || 0,
-      createdAt: now,
-      updatedAt: now
-    };
+    const result = await db.insert(medicalDocuments).values({
+      ...document,
+      uploadDate: document.uploadDate || new Date()
+    }).returning();
+    
+    return result[0];
   }
 
   async updateDocument(id: number, data: Partial<MedicalDocument>): Promise<MedicalDocument | undefined> {
-    // This would update the medicalDocuments table
-    return undefined;
+    const result = await db.update(medicalDocuments)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(medicalDocuments.id, id))
+      .returning();
+    
+    return result.length > 0 ? result[0] : undefined;
   }
 
   async deleteDocument(id: number): Promise<boolean> {
-    // This would delete from the medicalDocuments table
-    return false;
+    const result = await db.delete(medicalDocuments).where(eq(medicalDocuments.id, id)).returning();
+    return result.length > 0;
   }
 }
