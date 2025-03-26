@@ -97,20 +97,39 @@ export default function PatientLogin() {
 
   const onLoginSubmit = (values: LoginFormValues) => {
     console.log("Patient login attempt:", values.username);
+    
     loginMutation.mutate(values, {
       onSuccess: (data) => {
+        if (!data || !data.success || !data.patient) {
+          console.error("Login response has unexpected format:", data);
+          toast({
+            title: "Login error",
+            description: "Received an invalid response from the server. Please try again.",
+            variant: "destructive"
+          });
+          return;
+        }
+        
         console.log("Login successful:", data);
         toast({
           title: "Login successful",
-          description: "Welcome to the patient portal",
+          description: `Welcome back, ${data.patient.firstName}!`,
         });
-        navigate("/patient-portal");
+        
+        // Wait a short time to ensure state is updated before navigation
+        setTimeout(() => {
+          navigate("/patient-portal");
+        }, 500);
       },
-      onError: (error) => {
+      onError: (error: Error) => {
         console.error("Login failed:", error);
+        loginForm.setError("username", { 
+          type: "manual",
+          message: "Login failed. Please check your credentials."
+        });
         toast({
           title: "Login failed",
-          description: error.message,
+          description: error.message || "Invalid username or password",
           variant: "destructive"
         });
       }
@@ -118,10 +137,41 @@ export default function PatientLogin() {
   };
 
   const onActivateSubmit = (values: ActivateFormValues) => {
+    console.log("Patient activation attempt for:", values.patientId);
+    
     activateMutation.mutate({
       patientId: values.patientId,
       token: values.token,
       password: values.password
+    }, {
+      onSuccess: (data) => {
+        console.log("Activation successful:", data);
+        setActivationSuccess(true);
+        activateForm.reset();
+        
+        // After successful activation, switch to login tab with a delay
+        setTimeout(() => {
+          setActiveTab('login');
+          toast({
+            title: "Account activated",
+            description: "Your account is now active. Please log in with your credentials.",
+          });
+        }, 2000);
+      },
+      onError: (error: Error) => {
+        console.error("Activation failed:", error);
+        toast({
+          title: "Activation failed",
+          description: error.message || "Unable to activate your account. Please check your details.",
+          variant: "destructive"
+        });
+        
+        // Set form errors
+        activateForm.setError("token", { 
+          type: "manual",
+          message: "Invalid or expired token"
+        });
+      }
     });
   };
 
