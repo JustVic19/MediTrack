@@ -45,27 +45,34 @@ export function generateToken(): { token: string, expires: Date } {
 export async function patientLogin(req: Request, res: Response) {
   try {
     const { username, password } = req.body;
+    console.log('Patient login attempt for:', username);
     
     if (!username || !password) {
+      console.log('Missing username or password');
       return res.status(400).json({ error: 'Username and password are required' });
     }
     
     // Find patient by portal username
     const patient = await storage.getPatientByPortalUsername(username);
+    console.log('Patient found:', patient ? patient.id : 'none');
     
     if (!patient) {
+      console.log('Patient not found');
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     
     // Check if portal is enabled for this patient
     if (!patient.portalEnabled) {
+      console.log('Portal not enabled for patient');
       return res.status(401).json({ error: 'Patient portal access is not enabled for this account' });
     }
     
     // Verify password
     const passwordValid = await comparePasswords(password, patient.portalPassword || '');
+    console.log('Password validation:', passwordValid ? 'success' : 'failed');
     
     if (!passwordValid) {
+      console.log('Invalid password');
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     
@@ -78,20 +85,34 @@ export async function patientLogin(req: Request, res: Response) {
     req.session.patientId = patient.id;
     req.session.isPatient = true;
     
-    // Return patient information (excluding sensitive data)
-    const patientInfo = {
-      id: patient.id,
-      patientId: patient.patientId,
-      firstName: patient.firstName,
-      lastName: patient.lastName,
-      email: patient.email,
-      dateOfBirth: patient.dateOfBirth,
-      portalLastLogin: patient.portalLastLogin
-    };
-    
-    res.json({ 
-      success: true,
-      patient: patientInfo
+    // Force session save before responding
+    req.session.save((err) => {
+      if (err) {
+        console.error('Error saving session:', err);
+      }
+      
+      console.log('Session after login:', JSON.stringify({
+        patientId: req.session.patientId,
+        isPatient: req.session.isPatient,
+        cookie: req.session.cookie
+      }));
+      
+      // Return patient information (excluding sensitive data)
+      const patientInfo = {
+        id: patient.id,
+        patientId: patient.patientId,
+        firstName: patient.firstName,
+        lastName: patient.lastName,
+        email: patient.email,
+        dateOfBirth: patient.dateOfBirth,
+        portalLastLogin: patient.portalLastLogin
+      };
+      
+      console.log('Login successful for patient:', patient.patientId);
+      res.json({ 
+        success: true,
+        patient: patientInfo
+      });
     });
   } catch (error) {
     console.error('Patient login error:', error);
@@ -102,14 +123,25 @@ export async function patientLogin(req: Request, res: Response) {
 // Check patient authentication status
 export async function checkPatientAuthStatus(req: Request, res: Response) {
   try {
+    console.log('Session data:', JSON.stringify({
+      patientId: req.session.patientId,
+      isPatient: req.session.isPatient,
+      cookie: req.session.cookie
+    }));
+    
     if (!req.session.patientId || !req.session.isPatient) {
+      console.log('Patient not authenticated in session');
       return res.json({ isLoggedIn: false });
     }
     
     const patient = await storage.getPatient(req.session.patientId);
+    console.log('Patient found:', patient ? patient.id : 'none');
     
     if (!patient || !patient.portalEnabled) {
-      req.session.destroy(() => {});
+      console.log('Patient not found or portal not enabled');
+      req.session.destroy((err) => {
+        if (err) console.error('Error destroying session:', err);
+      });
       return res.json({ isLoggedIn: false });
     }
     
@@ -124,6 +156,7 @@ export async function checkPatientAuthStatus(req: Request, res: Response) {
       portalLastLogin: patient.portalLastLogin
     };
     
+    console.log('Patient authenticated:', patientInfo.patientId);
     res.json({ 
       isLoggedIn: true,
       patient: patientInfo

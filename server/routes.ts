@@ -34,12 +34,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use(
     session({
       secret: "meditrack-secret-key", // In production, this should be an environment variable
-      resave: false,
-      saveUninitialized: false,
+      resave: true, // Changed to true to ensure session is saved on all responses
+      saveUninitialized: true, // Changed to true to ensure new sessions are saved
       store: storage.sessionStore,
       cookie: {
         secure: process.env.NODE_ENV === "production",
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        httpOnly: true,
       },
     })
   );

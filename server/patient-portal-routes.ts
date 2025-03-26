@@ -17,28 +17,15 @@ export function registerPatientPortalRoutes(app: Express) {
   app.post('/api/patient/set-password', setPatientPortalPassword);
   app.post('/api/patient/generate-activation', generatePatientActivation);
   
-  // All routes below this middleware require patient authentication
-  const patientProtectedRoutes = [
-    '/api/patient-portal/appointments',
-    '/api/patient-portal/history',
-    '/api/patient-portal/documents',
-    '/api/patient-portal/questionnaires',
-    '/api/patient-portal/questionnaire-responses',
-    '/api/patient-portal/medications',
-    '/api/patient-portal/refill-requests',
-    '/api/patient-portal/conversations',
-    '/api/patient-portal/messages'
-  ];
-  
-  patientProtectedRoutes.forEach(route => {
-    app.use(route, requirePatientAuth);
-  });
+  // Apply authentication middleware to protect patient portal routes
+  app.use('/api/patient-portal', requirePatientAuth);
   // Patient Portal API endpoints
   app.get('/api/patient-portal/appointments', async (req, res) => {
     try {
-      const patientId = parseInt(req.query.patientId as string);
-      if (isNaN(patientId)) {
-        return res.status(400).json({ error: 'Invalid patient ID' });
+      // Use patient ID from the session instead of query parameter
+      const patientId = req.session.patientId;
+      if (!patientId) {
+        return res.status(400).json({ error: 'Patient ID not found in session' });
       }
       
       const appointments = await storage.getAppointmentsByPatientId(patientId);
