@@ -798,22 +798,36 @@ export class MemStorage implements IStorage {
     
     // Create patient history entries for completed appointments
     const histories = [
-      { id: 1, patientId: 2, visitDate: sampleAppointments[1].appointmentDate, notes: 'Patient presented with fever and cough', 
-        diagnosis: 'Influenza', treatment: 'Rest and fluids', prescriptions: 'Oseltamivir 75mg BID for 5 days' }
+      { 
+        id: 1, 
+        patientId: 2, 
+        visitDate: sampleAppointments[1].appointmentDate, 
+        notes: 'Patient presented with fever and cough', 
+        diagnosis: 'Influenza', 
+        treatment: 'Rest and fluids', 
+        prescriptions: 'Oseltamivir 75mg BID for 5 days',
+        type: 'history' as const
+      }
     ];
     
     histories.forEach((history) => {
       const entryDate = new Date(history.visitDate);
       entryDate.setHours(entryDate.getHours() + 1); // Created 1 hour after appointment
       
+      // Create a properly typed patient history entry
       const historyEntry: PatientHistory = {
-        ...history,
+        id: history.id,
+        patientId: history.patientId,
+        visitDate: history.visitDate,
         notes: history.notes || null,
         diagnosis: history.diagnosis || null,
         treatment: history.treatment || null,
         prescriptions: history.prescriptions || null,
+        type: history.type,
+        visitReason: 'Flu symptoms', // Add optional fields
+        recordedBy: 'Dr. Smith',
         createdAt: entryDate,
-        updatedAt: entryDate // Add the required updatedAt field
+        updatedAt: entryDate
       };
       
       this.patientHistories.set(history.id, historyEntry);
