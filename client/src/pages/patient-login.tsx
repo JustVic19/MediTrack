@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Logo } from '@/components/ui/logo';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Separator } from '@/components/ui/separator';
 
 // Form validation schemas
 const loginSchema = z.object({
@@ -336,6 +337,18 @@ export default function PatientLogin() {
           <CardFooter className="flex-col space-y-4">
             <div className="text-sm text-gray-500 text-center">
               <p>Don't have an account? Ask your healthcare provider for an activation link.</p>
+            </div>
+            <Separator className="my-2" />
+            <div className="text-sm text-center">
+              <p className="mb-2">Are you a doctor or staff member?</p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full" 
+                onClick={() => navigate("/auth")}
+              >
+                Go to Staff Login
+              </Button>
             </div>
           </CardFooter>
         </Card>

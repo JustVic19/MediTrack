@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { Redirect } from "wouter";
+import { Redirect, useLocation } from "wouter";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -55,6 +55,7 @@ export default function AuthPage() {
   const [isResetSubmitting, setIsResetSubmitting] = useState(false);
   const { user, isLoading, loginMutation, registerMutation } = useAuth();
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   
   // Create the password reset form
   const resetForm = useForm<ResetPasswordValues>({
@@ -367,13 +368,27 @@ export default function AuthPage() {
               </TabsContent>
             </Tabs>
           </CardContent>
-          <CardFooter className="flex flex-col items-center justify-center space-y-2">
+          <CardFooter className="flex flex-col items-center justify-center space-y-4">
             <div className="text-sm text-muted-foreground">
               {activeTab === "login" ? (
                 <span>Don't have an account? <Button variant="link" className="p-0 h-auto" onClick={() => setActiveTab("register")}>Register</Button></span>
               ) : (
                 <span>Already have an account? <Button variant="link" className="p-0 h-auto" onClick={() => setActiveTab("login")}>Login</Button></span>
               )}
+            </div>
+
+            <Separator className="w-full" />
+
+            <div className="text-sm text-center w-full">
+              <p className="mb-2">Looking for the Patient Portal?</p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full"
+                onClick={() => navigate("/patient-login")}
+              >
+                Go to Patient Login
+              </Button>
             </div>
           </CardFooter>
         </Card>
