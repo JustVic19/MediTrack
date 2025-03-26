@@ -325,7 +325,16 @@ export class MemStorage implements IStorage {
       smsOptIn: insertPatient.smsOptIn !== undefined ? insertPatient.smsOptIn : false,
       createdAt: patientCreationTime,
       updatedAt: patientCreationTime,
-      lastVisit: insertPatient.lastVisit || patientCreationTime
+      lastVisit: insertPatient.lastVisit || null,
+      // Initialize portal fields
+      portalEnabled: insertPatient.portalEnabled || false,
+      portalUsername: insertPatient.portalUsername || null,
+      portalPassword: insertPatient.portalPassword || null,
+      portalLastLogin: insertPatient.portalLastLogin || null,
+      portalActivationToken: insertPatient.portalActivationToken || null,
+      portalActivationExpires: insertPatient.portalActivationExpires || null,
+      portalPasswordResetToken: insertPatient.portalPasswordResetToken || null,
+      portalPasswordResetExpires: insertPatient.portalPasswordResetExpires || null
     };
     
     this.patients.set(id, patient);
