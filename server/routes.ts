@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { registerPatientPortalRoutes } from "./patient-portal-routes";
 import { 
   insertPatientSchema, 
   insertAppointmentSchema, 
@@ -564,6 +565,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Failed to update user' });
     }
   });
+
+  // Register Patient Portal Routes
+  registerPatientPortalRoutes(app);
 
   const httpServer = createServer(app);
   return httpServer;
