@@ -96,7 +96,25 @@ export default function PatientLogin() {
   }, [activateMutation.isSuccess, toast]);
 
   const onLoginSubmit = (values: LoginFormValues) => {
-    loginMutation.mutate(values);
+    console.log("Patient login attempt:", values.username);
+    loginMutation.mutate(values, {
+      onSuccess: (data) => {
+        console.log("Login successful:", data);
+        toast({
+          title: "Login successful",
+          description: "Welcome to the patient portal",
+        });
+        navigate("/patient-portal");
+      },
+      onError: (error) => {
+        console.error("Login failed:", error);
+        toast({
+          title: "Login failed",
+          description: error.message,
+          variant: "destructive"
+        });
+      }
+    });
   };
 
   const onActivateSubmit = (values: ActivateFormValues) => {

@@ -81,37 +81,42 @@ export async function patientLogin(req: Request, res: Response) {
       portalLastLogin: new Date()
     });
     
-    // Create session for patient
-    req.session.patientId = patient.id;
-    req.session.isPatient = true;
-    
-    // Force session save before responding
-    req.session.save((err) => {
+    // Create session for patient - regenerate session to prevent session fixation
+    req.session.regenerate((err) => {
       if (err) {
-        console.error('Error saving session:', err);
+        console.error('Error regenerating session:', err);
+        return res.status(500).json({ error: 'Session error' });
       }
       
-      console.log('Session after login:', JSON.stringify({
-        patientId: req.session.patientId,
-        isPatient: req.session.isPatient,
-        cookie: req.session.cookie
-      }));
+      // Set session variables
+      req.session.patientId = patient.id;
+      req.session.isPatient = true;
       
-      // Return patient information (excluding sensitive data)
-      const patientInfo = {
-        id: patient.id,
-        patientId: patient.patientId,
-        firstName: patient.firstName,
-        lastName: patient.lastName,
-        email: patient.email,
-        dateOfBirth: patient.dateOfBirth,
-        portalLastLogin: patient.portalLastLogin
-      };
-      
-      console.log('Login successful for patient:', patient.patientId);
-      res.json({ 
-        success: true,
-        patient: patientInfo
+      // Force session save before responding
+      req.session.save((saveErr) => {
+        if (saveErr) {
+          console.error('Error saving session:', saveErr);
+          return res.status(500).json({ error: 'Session save error' });
+        }
+        
+        console.log('Session after login:', JSON.stringify(req.session));
+        
+        // Return patient information (excluding sensitive data)
+        const patientInfo = {
+          id: patient.id,
+          patientId: patient.patientId,
+          firstName: patient.firstName,
+          lastName: patient.lastName,
+          email: patient.email,
+          dateOfBirth: patient.dateOfBirth,
+          portalLastLogin: patient.portalLastLogin
+        };
+        
+        console.log('Login successful for patient:', patient.patientId);
+        res.json({ 
+          success: true,
+          patient: patientInfo
+        });
       });
     });
   } catch (error) {
@@ -123,11 +128,7 @@ export async function patientLogin(req: Request, res: Response) {
 // Check patient authentication status
 export async function checkPatientAuthStatus(req: Request, res: Response) {
   try {
-    console.log('Session data:', JSON.stringify({
-      patientId: req.session.patientId,
-      isPatient: req.session.isPatient,
-      cookie: req.session.cookie
-    }));
+    console.log('Session data:', JSON.stringify(req.session));
     
     if (!req.session.patientId || !req.session.isPatient) {
       console.log('Patient not authenticated in session');
@@ -135,7 +136,7 @@ export async function checkPatientAuthStatus(req: Request, res: Response) {
     }
     
     const patient = await storage.getPatient(req.session.patientId);
-    console.log('Patient found:', patient ? patient.id : 'none');
+    console.log('Patient found from session:', patient ? patient.id : 'none');
     
     if (!patient || !patient.portalEnabled) {
       console.log('Patient not found or portal not enabled');
