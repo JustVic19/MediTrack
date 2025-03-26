@@ -27,6 +27,7 @@ import {
   disableTwoFactor,
   useRecoveryCode
 } from "./auth";
+import { registerPatientPortalRoutes } from "./patient-portal-routes";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup express-session middleware
