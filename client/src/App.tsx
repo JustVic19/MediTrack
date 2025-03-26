@@ -1,9 +1,9 @@
 import { Switch, Route } from "wouter";
+import { ProtectedRoute } from "@/lib/protected-route";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "./lib/queryClient";
+import { queryClient } from "@/lib/queryClient";
 import { AuthProvider } from "@/hooks/use-auth";
-import { ProtectedRoute } from "@/lib/protected-route";
 
 import Dashboard from "@/pages/dashboard";
 import Patients from "@/pages/patients";
@@ -16,6 +16,8 @@ import Settings from "@/pages/settings";
 import ProfilePage from "@/pages/profile";
 import SymptomChecker from "@/pages/symptom-checker";
 import AuthPage from "@/pages/auth-page";
+import PatientPortal from "@/pages/patient-portal";
+import PatientLogin from "@/pages/patient-login";
 import NotFound from "@/pages/not-found";
 import MainLayout from "@/layouts/main-layout";
 
@@ -24,6 +26,7 @@ function AppRoutes() {
     <Switch>
       {/* Public routes */}
       <Route path="/auth" component={AuthPage} />
+      <Route path="/patient-login" component={PatientLogin} />
 
       {/* Protected routes - wrapped in MainLayout */}
       <ProtectedRoute 
@@ -34,6 +37,8 @@ function AppRoutes() {
           </MainLayout>
         )} 
       />
+      
+      <Route path="/patient-portal" component={PatientPortal} />
       
       <ProtectedRoute 
         path="/patients" 
