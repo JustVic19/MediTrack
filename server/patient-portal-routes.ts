@@ -41,8 +41,7 @@ export function registerPatientPortalRoutes(app: Express) {
         appointmentDate: new Date(appointmentDate),
         reason,
         status: 'Requested', // Special status for patient-requested appointments
-        notes: null,
-        smsReminderSent: false
+        notes: null
       });
       
       res.status(201).json(appointment);
