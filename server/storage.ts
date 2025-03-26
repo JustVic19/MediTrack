@@ -771,7 +771,7 @@ export class MemStorage implements IStorage {
       if (patient.id === 1) {
         fullPatient.portalEnabled = true;
         fullPatient.portalUsername = 'john.smith';
-        fullPatient.portalPassword = '$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNekdHgTGmrpHEfIoxm'; // password is 'password123'
+        fullPatient.portalPassword = 'd0dae83c28b2e2406ccd07d1baa973fb92ca27389ae6bf5815dc77ad3a1fcaaa37d395444c2901bd541403c4b5c4c5f40652a66aba1009e5e2d8425d88c17a1c.216026a7d5ebd384b8c2dad44c029f58'; // password is 'password123'
         fullPatient.portalLastLogin = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // Last week
       }
       
