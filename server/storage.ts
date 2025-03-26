@@ -755,8 +755,25 @@ export class MemStorage implements IStorage {
         updatedAt: createdAt,
         status: patient.status || 'Active',
         email: patient.email || null,
-        lastVisit
+        lastVisit,
+        // Default portal fields
+        portalEnabled: false,
+        portalUsername: null,
+        portalPassword: null,
+        portalLastLogin: null,
+        portalActivationToken: null,
+        portalActivationExpires: null,
+        portalPasswordResetToken: null,
+        portalPasswordResetExpires: null
       };
+      
+      // Set up portal access for John Smith as a demo account
+      if (patient.id === 1) {
+        fullPatient.portalEnabled = true;
+        fullPatient.portalUsername = 'john.smith';
+        fullPatient.portalPassword = '$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNekdHgTGmrpHEfIoxm'; // password is 'password123'
+        fullPatient.portalLastLogin = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // Last week
+      }
       
       this.patients.set(patient.id, fullPatient);
       this.currentPatientId = Math.max(this.currentPatientId, patient.id + 1);
