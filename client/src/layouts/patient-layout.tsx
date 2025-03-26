@@ -1,37 +1,19 @@
-import { ReactNode, useEffect } from "react";
-import { useLocation } from "wouter";
+import { ReactNode } from "react";
 import { PatientSidebar } from "@/components/patient-portal/patient-sidebar";
 import { PatientMobileHeader, PatientMobileBottomNav } from "@/components/patient-portal/patient-mobile-nav";
 import { usePatientAuth } from "@/hooks/use-patient-auth";
-import { Loader2 } from "lucide-react";
 
 interface PatientLayoutProps {
   children: ReactNode;
 }
 
 export default function PatientLayout({ children }: PatientLayoutProps) {
-  const [, navigate] = useLocation();
-  const { patient, isLoading } = usePatientAuth();
+  // We don't need to handle auth redirects here anymore
+  // since PatientProtectedRoute handles that logic
+  const { patient } = usePatientAuth();
 
-  useEffect(() => {
-    // If not loading and no patient is found, redirect to login
-    if (!isLoading && !patient) {
-      navigate("/patient-login");
-    }
-  }, [patient, isLoading, navigate]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  // If not authenticated yet (loading state not finished), show nothing
-  if (!patient) {
-    return null;
-  }
+  // For debugging - this helps identify if the patient data is available in the layout
+  console.log("PatientLayout rendering with patient:", patient?.firstName || "no patient data");
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-slate-50 dark:bg-slate-950">

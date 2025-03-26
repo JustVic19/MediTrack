@@ -24,7 +24,14 @@ export default function PatientPortal() {
   const [activeTab, setActiveTab] = useState("overview");
 
   // Use the patient auth hook for authentication
-  const { patient } = usePatientAuth();
+  const { patient, isLoading, error } = usePatientAuth();
+
+  // Add debugging
+  console.log("PatientPortal component rendering", { 
+    patient: patient ? `${patient.firstName} ${patient.lastName}` : 'null', 
+    isLoading, 
+    error: error?.message
+  });
 
   // Parse the tab from URL query parameters
   useEffect(() => {
@@ -50,8 +57,17 @@ export default function PatientPortal() {
     window.history.pushState({}, "", url.toString());
   };
 
-  // If not authenticated yet, the patient layout will handle the redirect
+  // Loading state handled by PatientProtectedRoute
+  // Just in case, check here too
+  if (isLoading) {
+    console.log("PatientPortal: Still loading patient data");
+    return null;
+  }
+  
+  // Patient auth check handled by PatientProtectedRoute
+  // Double-check here for extra safety
   if (!patient) {
+    console.log("PatientPortal: No patient data available");
     return null;
   }
 
