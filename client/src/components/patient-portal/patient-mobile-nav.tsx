@@ -14,6 +14,7 @@ import {
 import { usePatientAuth } from "@/hooks/use-patient-auth";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export function PatientMobileHeader() {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,13 +27,18 @@ export function PatientMobileHeader() {
           <Logo size={32} className="mr-2" />
           <h1 className="text-xl font-bold text-primary">Patient Portal</h1>
         </div>
-        <button
-          type="button"
-          className="p-2 rounded-md text-muted-foreground"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        <div className="flex items-center gap-2">
+          <div className="bg-card p-1 rounded-md shadow-sm border border-border">
+            <ThemeToggle />
+          </div>
+          <button
+            type="button"
+            className="p-2 rounded-md text-muted-foreground"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
       </div>
       
       {isOpen && <PatientMobileMenu patient={patient} setIsOpen={setIsOpen} />}

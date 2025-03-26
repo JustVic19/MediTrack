@@ -14,6 +14,7 @@ import { Logo } from '@/components/ui/logo';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 // Form validation schemas
 const loginSchema = z.object({
@@ -170,12 +171,19 @@ export default function PatientLogin() {
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-2xl font-bold">Patient Portal</CardTitle>
-              <Logo size={40} className="text-indigo-600 md:hidden" />
+              <div className="flex flex-col">
+                <CardTitle className="text-2xl font-bold">Patient Portal</CardTitle>
+                <CardDescription>
+                  Access your personal health information securely
+                </CardDescription>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="bg-card p-1 rounded-md shadow-sm border border-border">
+                  <ThemeToggle />
+                </div>
+                <Logo size={40} className="text-indigo-600 md:hidden" />
+              </div>
             </div>
-            <CardDescription>
-              Access your personal health information securely
-            </CardDescription>
           </CardHeader>
           
           <CardContent>
