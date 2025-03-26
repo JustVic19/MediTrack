@@ -641,15 +641,19 @@ export class MemStorage implements IStorage {
     const now = new Date();
     
     const newDocument: MedicalDocument = {
-      ...document,
       id,
-      uploadDate: now, // Explicitly set uploadDate
-      lastAccessed: null,
-      uploadedBy: document.uploadedBy || 1, // Default to admin user if not provided
-      isArchived: document.isArchived !== undefined ? document.isArchived : false,
+      patientId: document.patientId,
+      fileName: document.fileName,
+      fileType: document.fileType,
+      fileSize: document.fileSize,
+      contentType: document.contentType || "application/pdf", // Default content type
+      fileData: document.fileData,
       category: document.category || "general",
       description: document.description || null,
-      contentType: document.contentType || "application/pdf", // Default content type
+      uploadedBy: document.uploadedBy || 1, // Default to admin user if not provided
+      uploadDate: now,
+      lastAccessed: null,
+      isArchived: document.isArchived !== undefined ? document.isArchived : false,
       createdAt: now,
       updatedAt: now
     };
@@ -777,7 +781,8 @@ export class MemStorage implements IStorage {
       
       const appointment: Appointment = {
         ...appt,
-        createdAt: now
+        createdAt: now,
+        updatedAt: now // Add the required updatedAt field
       };
       
       this.appointments.set(appt.id, appointment);
@@ -803,7 +808,12 @@ export class MemStorage implements IStorage {
       
       const historyEntry: PatientHistory = {
         ...history,
-        createdAt: entryDate
+        notes: history.notes || null,
+        diagnosis: history.diagnosis || null,
+        treatment: history.treatment || null,
+        prescriptions: history.prescriptions || null,
+        createdAt: entryDate,
+        updatedAt: entryDate // Add the required updatedAt field
       };
       
       this.patientHistories.set(history.id, historyEntry);
