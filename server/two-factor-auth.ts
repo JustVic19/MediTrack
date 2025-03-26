@@ -9,10 +9,19 @@ export function generateSecret(username: string): {
   secret: string;
   otpauth_url: string;
 } {
-  return speakeasy.generateSecret({
+  // Type assertion to handle speakeasy's incomplete typings
+  const secretData = speakeasy.generateSecret({
     name: `MediTrack:${username}`,
     length: 20,
-  });
+  }) as {
+    base32: string;
+    otpauth_url?: string;
+  };
+  
+  return {
+    secret: secretData.base32,
+    otpauth_url: secretData.otpauth_url || ''
+  };
 }
 
 /**

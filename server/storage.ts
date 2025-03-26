@@ -139,6 +139,13 @@ export class MemStorage implements IStorage {
       verificationExpires: null,
       passwordResetToken: null,
       passwordResetExpires: null,
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      twoFactorRecoveryCodes: null,
+      twoFactorBackupCodes: null,
+      lastLoginAt: now,
+      loginAttempts: 0,
+      lockedUntil: null,
       createdAt: now,
       updatedAt: now
     };
@@ -159,6 +166,13 @@ export class MemStorage implements IStorage {
       verificationExpires: null,
       passwordResetToken: null,
       passwordResetExpires: null,
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      twoFactorRecoveryCodes: null,
+      twoFactorBackupCodes: null,
+      lastLoginAt: now,
+      loginAttempts: 0,
+      lockedUntil: null,
       createdAt: now,
       updatedAt: now
     };

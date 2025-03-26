@@ -21,7 +21,11 @@ import {
   verifyEmail,
   resendVerification,
   requestPasswordReset,
-  resetPassword
+  resetPassword,
+  setupTwoFactor,
+  verifyTwoFactor,
+  disableTwoFactor,
+  useRecoveryCode
 } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -46,6 +50,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/auth/status', checkAuthStatus);
   app.post('/api/auth/request-password-reset', requestPasswordReset);
   app.post('/api/auth/reset-password', resetPassword);
+  
+  // Two-Factor Authentication routes
+  app.post('/api/auth/2fa/setup', setupTwoFactor);
+  app.post('/api/auth/2fa/verify', verifyTwoFactor);
+  app.post('/api/auth/2fa/disable', disableTwoFactor);
+  app.post('/api/auth/2fa/recovery', useRecoveryCode);
   
   // Debug endpoint for development - would be removed in production
   app.get('/api/auth/users', async (req, res) => {
