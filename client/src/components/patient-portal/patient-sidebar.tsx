@@ -43,13 +43,15 @@ export function PatientSidebar() {
 
   // Manual navigation function to handle query parameters correctly
   const navigateToTab = (tab: string) => {
-    console.log("PatientSidebar navigateToTab:", tab);
+    console.log("PatientSidebar navigateToTab called with tab:", tab);
+    
+    // Use window.location directly since wouter navigation might be causing issues
     if (tab === 'overview') {
-      console.log("Navigating to /patient-portal");
-      navigate('/patient-portal');
+      console.log("PatientSidebar: Redirecting to /patient-portal");
+      window.location.href = '/patient-portal';
     } else {
-      console.log(`Navigating to /patient-portal?tab=${tab}`);
-      navigate(`/patient-portal?tab=${tab}`);
+      console.log(`PatientSidebar: Redirecting to /patient-portal?tab=${tab}`);
+      window.location.href = `/patient-portal?tab=${tab}`;
     }
   };
 

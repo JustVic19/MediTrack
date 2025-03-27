@@ -68,14 +68,16 @@ function PatientMobileMenu({ patient, setIsOpen }: {
   
   // Manual navigation function to handle query parameters correctly
   const navigateToTab = (tab: string) => {
-    console.log("PatientMobileMenu navigateToTab:", tab);
+    console.log("PatientMobileMenu navigateToTab called with tab:", tab);
     setIsOpen(false);
+    
+    // Use window.location directly since wouter navigation might be causing issues
     if (tab === 'overview') {
-      console.log("PatientMobileMenu: Navigating to /patient-portal");
-      navigate('/patient-portal');
+      console.log("PatientMobileMenu: Redirecting to /patient-portal");
+      window.location.href = '/patient-portal';
     } else {
-      console.log(`PatientMobileMenu: Navigating to /patient-portal?tab=${tab}`);
-      navigate(`/patient-portal?tab=${tab}`);
+      console.log(`PatientMobileMenu: Redirecting to /patient-portal?tab=${tab}`);
+      window.location.href = `/patient-portal?tab=${tab}`;
     }
   };
   
@@ -175,13 +177,15 @@ export function PatientMobileBottomNav() {
   
   // Manual navigation function to handle query parameters correctly
   const navigateToTab = (tab: string) => {
-    console.log("PatientMobileNav navigateToTab:", tab);
+    console.log("PatientMobileNav navigateToTab called with tab:", tab);
+    
+    // Use window.location directly since wouter navigation might be causing issues
     if (tab === 'overview') {
-      console.log("PatientMobileNav: Navigating to /patient-portal");
-      navigate('/patient-portal');
+      console.log("PatientMobileNav: Redirecting to /patient-portal");
+      window.location.href = '/patient-portal';
     } else {
-      console.log(`PatientMobileNav: Navigating to /patient-portal?tab=${tab}`);
-      navigate(`/patient-portal?tab=${tab}`);
+      console.log(`PatientMobileNav: Redirecting to /patient-portal?tab=${tab}`);
+      window.location.href = `/patient-portal?tab=${tab}`;
     }
   };
   
