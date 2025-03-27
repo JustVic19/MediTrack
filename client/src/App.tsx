@@ -18,6 +18,7 @@ import PatientHistory from "@/pages/patient-history";
 import Settings from "@/pages/settings";
 import ProfilePage from "@/pages/profile";
 import SymptomChecker from "@/pages/symptom-checker";
+import Notifications from "@/pages/notifications";
 import AuthPage from "@/pages/auth-page";
 import PatientPortal from "@/pages/patient-portal";
 import PatientLogin from "@/pages/patient-login";
@@ -138,6 +139,15 @@ function AppRoutes() {
         component={() => (
           <MainLayout>
             <SymptomChecker />
+          </MainLayout>
+        )} 
+      />
+      
+      <ProtectedRoute 
+        path="/notifications" 
+        component={() => (
+          <MainLayout>
+            <Notifications />
           </MainLayout>
         )} 
       />
