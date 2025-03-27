@@ -39,16 +39,14 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Initialize database if USE_DATABASE=true
-  if (process.env.USE_DATABASE === 'true') {
-    try {
-      await initializeDatabase();
-      await seedDatabase();
-      log('Database initialized and seeded successfully', 'db');
-    } catch (error) {
-      log(`Database initialization failed: ${error}`, 'db');
-      console.error('Database error:', error);
-    }
+  // Always initialize database for production
+  try {
+    await initializeDatabase();
+    await seedDatabase();
+    log('Database initialized and seeded successfully', 'db');
+  } catch (error) {
+    log(`Database initialization failed: ${error}`, 'db');
+    console.error('Database error:', error);
   }
 
   // Initialize email service
