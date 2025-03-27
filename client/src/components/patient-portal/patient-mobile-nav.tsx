@@ -50,19 +50,39 @@ function PatientMobileMenu({ patient, setIsOpen }: {
   patient: any, 
   setIsOpen: (open: boolean) => void 
 }) {
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
   const { logoutMutation } = usePatientAuth();
   
+  // Parse the current URL to extract the active tab
+  const getCurrentTab = () => {
+    const url = new URL(window.location.href);
+    return url.searchParams.get('tab') || '';
+  };
+  
+  // Manual navigation function to handle query parameters correctly
+  const navigateToTab = (tab: string) => {
+    setIsOpen(false);
+    if (tab === 'overview') {
+      navigate('/patient-portal');
+    } else {
+      navigate(`/patient-portal?tab=${tab}`);
+    }
+  };
+  
   const navigation = [
-    { name: 'Overview', href: '/patient-portal', icon: Home },
-    { name: 'Appointments', href: '/patient-portal?tab=appointments', icon: Calendar },
-    { name: 'Medical Records', href: '/patient-portal?tab=records', icon: FileText },
-    { name: 'Messages', href: '/patient-portal?tab=messages', icon: Mail },
-    { name: 'My Profile', href: '/patient-portal?tab=profile', icon: UserRound },
+    { name: 'Overview', tab: 'overview', icon: Home },
+    { name: 'Appointments', tab: 'appointments', icon: Calendar },
+    { name: 'Medical Records', tab: 'records', icon: FileText },
+    { name: 'Messages', tab: 'messages', icon: Mail },
+    { name: 'My Profile', tab: 'profile', icon: UserRound },
   ];
 
   const handleLogout = () => {
-    logoutMutation.mutate();
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        navigate('/patient-login');
+      }
+    });
     setIsOpen(false);
   };
 
@@ -70,16 +90,18 @@ function PatientMobileMenu({ patient, setIsOpen }: {
     <div className="md:hidden absolute inset-x-0 top-14 z-40 bg-background border-b border-border shadow-lg">
       <div className="pt-2 pb-3 space-y-1">
         {navigation.map((item) => {
-          const isActive = location === item.href || 
-            (item.href.includes('?tab=') && location.includes(item.href.split('?tab=')[1]));
+          // Get the current tab from the URL
+          const currentTab = getCurrentTab();
+          // Check if this item is active
+          const isActive = (item.tab === 'overview' && !currentTab) || currentTab === item.tab;
           
           return (
-            <Link
+            <Button
               key={item.name}
-              href={item.href}
-              onClick={() => setIsOpen(false)}
+              variant="ghost"
+              onClick={() => navigateToTab(item.tab)}
               className={cn(
-                "flex items-center pl-3 pr-4 py-2 border-l-4 text-base font-medium",
+                "w-full justify-start pl-3 pr-4 py-2 border-l-4 text-base font-medium rounded-none",
                 isActive
                   ? "border-primary text-primary bg-primary/10"
                   : "border-transparent text-foreground hover:bg-secondary/50 hover:border-border hover:text-foreground"
@@ -90,7 +112,7 @@ function PatientMobileMenu({ patient, setIsOpen }: {
                 isActive ? "text-primary" : "text-muted-foreground"
               )} />
               {item.name}
-            </Link>
+            </Button>
           );
         })}
       </div>
@@ -126,35 +148,53 @@ function PatientMobileMenu({ patient, setIsOpen }: {
 }
 
 export function PatientMobileBottomNav() {
-  const [location] = useLocation();
+  const [, navigate] = useLocation();
+  
+  // Parse the current URL to extract the active tab
+  const getCurrentTab = () => {
+    const url = new URL(window.location.href);
+    return url.searchParams.get('tab') || '';
+  };
+  
+  // Manual navigation function to handle query parameters correctly
+  const navigateToTab = (tab: string) => {
+    if (tab === 'overview') {
+      navigate('/patient-portal');
+    } else {
+      navigate(`/patient-portal?tab=${tab}`);
+    }
+  };
   
   const navigation = [
-    { name: 'Home', href: '/patient-portal', icon: Home },
-    { name: 'Visits', href: '/patient-portal?tab=appointments', icon: Calendar },
-    { name: 'Records', href: '/patient-portal?tab=records', icon: FileText },
-    { name: 'Messages', href: '/patient-portal?tab=messages', icon: Mail },
-    { name: 'Profile', href: '/patient-portal?tab=profile', icon: UserRound },
+    { name: 'Home', tab: 'overview', icon: Home },
+    { name: 'Visits', tab: 'appointments', icon: Calendar },
+    { name: 'Records', tab: 'records', icon: FileText },
+    { name: 'Messages', tab: 'messages', icon: Mail },
+    { name: 'Profile', tab: 'profile', icon: UserRound },
   ];
 
   return (
     <div className="md:hidden fixed bottom-0 inset-x-0 bg-white dark:bg-slate-900 border-t border-border z-10">
       <div className="grid grid-cols-5 h-16">
         {navigation.map((item) => {
-          const isActive = location === item.href || 
-            (item.href.includes('?tab=') && location.includes(item.href.split('?tab=')[1]));
+          // Get the current tab from the URL
+          const currentTab = getCurrentTab();
+          // Check if this item is active
+          const isActive = (item.tab === 'overview' && !currentTab) || currentTab === item.tab;
           
           return (
-            <Link
+            <Button
               key={item.name}
-              href={item.href}
+              variant="ghost"
+              onClick={() => navigateToTab(item.tab)}
               className={cn(
-                "flex flex-col items-center justify-center",
+                "flex flex-col items-center justify-center h-full rounded-none",
                 isActive ? "text-primary" : "text-muted-foreground"
               )}
             >
               <item.icon className="h-5 w-5" />
               <span className="text-xs mt-1">{item.name}</span>
-            </Link>
+            </Button>
           );
         })}
       </div>

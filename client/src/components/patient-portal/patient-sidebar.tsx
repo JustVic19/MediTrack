@@ -16,26 +16,41 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Logo } from "@/components/ui/logo";
 
 export function PatientSidebar() {
-  const [location, setLocation] = useLocation();
+  const [location, navigate] = useLocation();
   const { patient, logoutMutation } = usePatientAuth();
+  
+  // Parse the current URL to extract the active tab
+  const getCurrentTab = () => {
+    const url = new URL(window.location.href);
+    return url.searchParams.get('tab') || '';
+  };
   
   const handleLogout = () => {
     logoutMutation.mutate(undefined, {
       onSuccess: () => {
         // Redirect to login page after successful logout
-        setLocation('/patient-login');
+        navigate('/patient-login');
       }
     });
   };
 
+  // Manual navigation function to handle query parameters correctly
+  const navigateToTab = (tab: string) => {
+    if (tab === 'overview') {
+      navigate('/patient-portal');
+    } else {
+      navigate(`/patient-portal?tab=${tab}`);
+    }
+  };
+
   const navigation = [
-    { name: 'Overview', href: '/patient-portal', icon: Home },
-    { name: 'Appointments', href: '/patient-portal?tab=appointments', icon: Calendar },
-    { name: 'Medical Records', href: '/patient-portal?tab=records', icon: FileText },
-    { name: 'Messages', href: '/patient-portal?tab=messages', icon: Mail },
-    { name: 'Prescriptions', href: '/patient-portal?tab=prescriptions', icon: Pill },
-    { name: 'Questionnaires', href: '/patient-portal?tab=questionnaires', icon: ClipboardList },
-    { name: 'My Profile', href: '/patient-portal?tab=profile', icon: UserRound },
+    { name: 'Overview', tab: 'overview', icon: Home },
+    { name: 'Appointments', tab: 'appointments', icon: Calendar },
+    { name: 'Medical Records', tab: 'records', icon: FileText },
+    { name: 'Messages', tab: 'messages', icon: Mail },
+    { name: 'Prescriptions', tab: 'prescriptions', icon: Pill },
+    { name: 'Questionnaires', tab: 'questionnaires', icon: ClipboardList },
+    { name: 'My Profile', tab: 'profile', icon: UserRound },
   ];
 
   return (
@@ -52,18 +67,20 @@ export function PatientSidebar() {
         </div>
         <nav className="mt-5 flex-1 px-2 space-y-1">
           {navigation.map((item) => {
-            // For the patient portal, we need to handle the query params in the URL
-            const isActive = location === item.href || 
-              (item.href.includes('?tab=') && location.includes(item.href.split('?tab=')[1]));
+            // Get the current tab from the URL
+            const currentTab = getCurrentTab();
+            // Check if this item is active
+            const isActive = (item.tab === 'overview' && !currentTab) || currentTab === item.tab;
               
             return (
-              <Link 
-                key={item.name} 
-                href={item.href}
+              <Button 
+                key={item.name}
+                variant="ghost"
+                onClick={() => navigateToTab(item.tab)}
                 className={cn(
-                  "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
+                  "w-full justify-start text-sm font-medium rounded-md",
                   isActive 
-                    ? "bg-primary text-primary-foreground" 
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground" 
                     : "text-foreground hover:bg-secondary/50 hover:text-foreground"
                 )}
               >
@@ -76,7 +93,7 @@ export function PatientSidebar() {
                   )} 
                 />
                 {item.name}
-              </Link>
+              </Button>
             );
           })}
         </nav>
@@ -84,7 +101,11 @@ export function PatientSidebar() {
       <div className="flex-shrink-0 flex border-t border-border p-4">
         <div className="flex-shrink-0 w-full group block">
           <div className="flex items-center justify-between">
-            <Link href="/patient-portal?tab=profile" className="flex items-center hover:opacity-80 transition-opacity">
+            <Button
+              variant="ghost"
+              className="p-0 h-auto flex items-center hover:opacity-80 transition-opacity"
+              onClick={() => navigateToTab('profile')}
+            >
               <div>
                 <img 
                   className="inline-block h-9 w-9 rounded-full border-2 border-primary/20" 
@@ -100,7 +121,7 @@ export function PatientSidebar() {
                   Patient ID: {patient?.patientId}
                 </p>
               </div>
-            </Link>
+            </Button>
             <Button
               variant="ghost"
               size="sm"
