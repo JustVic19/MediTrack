@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -35,26 +35,47 @@ export default function PatientPortal() {
 
   // Parse the tab from URL query parameters
   useEffect(() => {
-    const url = new URL(window.location.href);
-    const tab = url.searchParams.get("tab");
-    if (tab) {
-      setActiveTab(tab);
+    // Add debugging
+    console.log("Location changed:", location);
+    
+    try {
+      // Extract tab from URL query parameter
+      const url = new URL(window.location.href);
+      const tab = url.searchParams.get("tab");
+      console.log("Current tab from URL:", tab);
+      
+      // Set the active tab based on URL or default to overview
+      if (tab) {
+        console.log("Setting active tab to:", tab);
+        setActiveTab(tab);
+      } else if (location === "/patient-portal") {
+        console.log("Setting active tab to overview");
+        setActiveTab("overview");
+      }
+    } catch (error) {
+      console.error("Error parsing URL:", error);
     }
   }, [location]);
 
   // Handle tab changes and update URL
   const handleTabChange = (value: string) => {
+    console.log("Tab change requested to:", value);
     setActiveTab(value);
     
     // Update the URL to reflect the current tab
-    const url = new URL(window.location.href);
-    if (value === "overview") {
-      url.searchParams.delete("tab");
-    } else {
-      url.searchParams.set("tab", value);
+    try {
+      const url = new URL(window.location.href);
+      if (value === "overview") {
+        url.searchParams.delete("tab");
+      } else {
+        url.searchParams.set("tab", value);
+      }
+      
+      console.log("Updating URL to:", url.toString());
+      window.history.pushState({}, "", url.toString());
+    } catch (error) {
+      console.error("Error updating URL:", error);
     }
-    
-    window.history.pushState({}, "", url.toString());
   };
 
   // Loading state handled by PatientProtectedRoute
@@ -75,6 +96,16 @@ export default function PatientPortal() {
     <PatientLayout>
       <div className="p-4 md:p-6 container max-w-6xl mx-auto">
         <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-7 mb-4">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="appointments">Appointments</TabsTrigger>
+            <TabsTrigger value="records">Records</TabsTrigger>
+            <TabsTrigger value="messages">Messages</TabsTrigger>
+            <TabsTrigger value="prescriptions">Prescriptions</TabsTrigger>
+            <TabsTrigger value="questionnaires">Questionnaires</TabsTrigger>
+            <TabsTrigger value="profile">My Profile</TabsTrigger>
+          </TabsList>
+          
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
             <div className="flex flex-col md:flex-row gap-4">

@@ -21,8 +21,15 @@ export function PatientSidebar() {
   
   // Parse the current URL to extract the active tab
   const getCurrentTab = () => {
-    const url = new URL(window.location.href);
-    return url.searchParams.get('tab') || '';
+    try {
+      const url = new URL(window.location.href);
+      const tab = url.searchParams.get('tab') || '';
+      console.log("PatientSidebar getCurrentTab:", tab);
+      return tab;
+    } catch (error) {
+      console.error("Error getting current tab:", error);
+      return '';
+    }
   };
   
   const handleLogout = () => {
@@ -36,9 +43,12 @@ export function PatientSidebar() {
 
   // Manual navigation function to handle query parameters correctly
   const navigateToTab = (tab: string) => {
+    console.log("PatientSidebar navigateToTab:", tab);
     if (tab === 'overview') {
+      console.log("Navigating to /patient-portal");
       navigate('/patient-portal');
     } else {
+      console.log(`Navigating to /patient-portal?tab=${tab}`);
       navigate(`/patient-portal?tab=${tab}`);
     }
   };

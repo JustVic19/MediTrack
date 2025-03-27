@@ -55,16 +55,26 @@ function PatientMobileMenu({ patient, setIsOpen }: {
   
   // Parse the current URL to extract the active tab
   const getCurrentTab = () => {
-    const url = new URL(window.location.href);
-    return url.searchParams.get('tab') || '';
+    try {
+      const url = new URL(window.location.href);
+      const tab = url.searchParams.get('tab') || '';
+      console.log("PatientMobileMenu getCurrentTab:", tab);
+      return tab;
+    } catch (error) {
+      console.error("Error getting current tab:", error);
+      return '';
+    }
   };
   
   // Manual navigation function to handle query parameters correctly
   const navigateToTab = (tab: string) => {
+    console.log("PatientMobileMenu navigateToTab:", tab);
     setIsOpen(false);
     if (tab === 'overview') {
+      console.log("PatientMobileMenu: Navigating to /patient-portal");
       navigate('/patient-portal');
     } else {
+      console.log(`PatientMobileMenu: Navigating to /patient-portal?tab=${tab}`);
       navigate(`/patient-portal?tab=${tab}`);
     }
   };
@@ -152,15 +162,25 @@ export function PatientMobileBottomNav() {
   
   // Parse the current URL to extract the active tab
   const getCurrentTab = () => {
-    const url = new URL(window.location.href);
-    return url.searchParams.get('tab') || '';
+    try {
+      const url = new URL(window.location.href);
+      const tab = url.searchParams.get('tab') || '';
+      console.log("PatientMobileNav getCurrentTab:", tab);
+      return tab;
+    } catch (error) {
+      console.error("Error getting current tab:", error);
+      return '';
+    }
   };
   
   // Manual navigation function to handle query parameters correctly
   const navigateToTab = (tab: string) => {
+    console.log("PatientMobileNav navigateToTab:", tab);
     if (tab === 'overview') {
+      console.log("PatientMobileNav: Navigating to /patient-portal");
       navigate('/patient-portal');
     } else {
+      console.log(`PatientMobileNav: Navigating to /patient-portal?tab=${tab}`);
       navigate(`/patient-portal?tab=${tab}`);
     }
   };
