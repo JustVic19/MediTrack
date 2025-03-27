@@ -176,7 +176,7 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="container py-6 max-w-4xl">
+    <div className="container py-6 px-8 max-w-4xl ml-4 md:ml-6">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Notifications</h1>
