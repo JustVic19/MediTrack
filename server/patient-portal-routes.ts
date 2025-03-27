@@ -6,7 +6,8 @@ import {
   checkPatientAuthStatus, 
   setPatientPortalPassword,
   generatePatientActivation,
-  requirePatientAuth
+  requirePatientAuth,
+  changePatientPassword
 } from "./patient-auth";
 
 export function registerPatientPortalRoutes(app: Express) {
@@ -16,6 +17,7 @@ export function registerPatientPortalRoutes(app: Express) {
   app.get('/api/patient/auth-status', checkPatientAuthStatus);
   app.post('/api/patient/set-password', setPatientPortalPassword);
   app.post('/api/patient/generate-activation', generatePatientActivation);
+  app.post('/api/patient/change-password', changePatientPassword);
   
   // Apply authentication middleware to protect patient portal routes
   app.use('/api/patient-portal', requirePatientAuth);

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { scrypt, randomBytes, timingSafeEqual } from 'crypto';
 import { promisify } from 'util';
 import { storage } from './storage';
-import { Patient } from '@shared/schema';
+import { Patient, InsertPatient } from '@shared/schema';
 import session from 'express-session';
 
 // Extend the Express Session interface
@@ -311,4 +311,64 @@ export function requirePatientAuth(req: Request, res: Response, next: NextFuncti
   }
   
   next();
+}
+
+// Change patient password
+export async function changePatientPassword(req: Request, res: Response) {
+  try {
+    const { patientId, currentPassword, newPassword } = req.body;
+    
+    // Validation
+    if (!patientId || !currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    
+    if (newPassword.length < 8) {
+      return res.status(400).json({ error: 'New password must be at least 8 characters' });
+    }
+    
+    // Check authentication
+    if (!req.session.patientId || !req.session.isPatient) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+    
+    // Ensure the logged-in patient is changing their own password
+    if (req.session.patientId !== parseInt(patientId)) {
+      return res.status(403).json({ error: 'You can only change your own password' });
+    }
+    
+    // Get the patient from storage
+    const patient = await storage.getPatient(req.session.patientId);
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found' });
+    }
+    
+    // Verify current password
+    if (!patient.portalPassword) {
+      return res.status(400).json({ error: 'You must set up a password first' });
+    }
+    
+    const isPasswordCorrect = await comparePasswords(currentPassword, patient.portalPassword);
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ error: 'Current password is incorrect' });
+    }
+    
+    // Hash the new password
+    const hashedPassword = await hashPassword(newPassword);
+    
+    // Update the patient record
+    const updatedPatient = await storage.updatePatient(patient.id, {
+      portalPassword: hashedPassword
+    });
+    
+    if (!updatedPatient) {
+      return res.status(500).json({ error: 'Failed to update password' });
+    }
+    
+    console.log(`Password changed for patient ${patient.patientId}`);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Change password error:', error);
+    res.status(500).json({ error: 'An error occurred while changing password' });
+  }
 }

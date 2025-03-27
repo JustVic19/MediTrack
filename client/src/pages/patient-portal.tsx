@@ -17,6 +17,7 @@ import PatientPortalRecords from "@/components/patient-portal/records";
 import PatientPortalMessages from "@/components/patient-portal/messages";
 import PatientPortalPrescriptions from "@/components/patient-portal/prescriptions";
 import PatientPortalQuestionnaires from "@/components/patient-portal/questionnaires";
+import { ChangePasswordDialog } from "@/components/patient-portal/change-password-dialog";
 
 export default function PatientPortal() {
   // Get the current location to check for query parameters
@@ -252,9 +253,7 @@ export default function PatientPortal() {
                     </div>
                     <Separator />
                     <div>
-                      <Button variant="outline" size="sm">
-                        Change Password
-                      </Button>
+                      <ChangePasswordDialog patientId={patient.id} />
                     </div>
                   </div>
                 </CardContent>
